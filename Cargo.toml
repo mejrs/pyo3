@@ -40,6 +40,8 @@ num-complex = { version = ">= 0.2, < 0.5", optional = true }
 serde = { version = "1.0", optional = true }
 
 [dev-dependencies]
+# Temporary, this is necessary for the word-count example
+rayon = "1"
 assert_approx_eq = "1.1.0"
 # O.3.5 uses the matches! macro, which isn't compatible with Rust 1.41
 criterion = "=0.3.4"
@@ -135,6 +137,12 @@ members = [
     "examples/setuptools-rust-starter",
     "examples/word-count"
 ]
+
+[[example]]
+name = "word-count"
+# I maybe want to use `path = "examples/word-count"` here?
+# However this runs into `Access is denied. (os error 5)`
+path = "examples/word-count/src/lib.rs"
 
 [package.metadata.docs.rs]
 no-default-features = true
