@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;exceptions.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>exceptions.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../pyo3/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;exceptions.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>exceptions.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css"disabled><link rel="stylesheet" type="text/css" href="../../dark.css"disabled><link rel="stylesheet" type="text/css" href="../../light.css"id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href='../../pyo3/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container rust-logo" href='../../pyo3/index.html'><img src='../../rust-logo.png' alt='logo'></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -887,6 +888,11 @@
 <span id="887">887</span>
 <span id="888">888</span>
 <span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="doccomment">//! Exception types defined by Python.</span>
@@ -910,7 +916,7 @@
         <span class="kw">impl</span> <span class="ident">::std::convert::From</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr</span> {
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr::from_instance</span>(<span class="ident">err</span>)
+                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr::from_value</span>(<span class="ident">err</span>)
             }
         }
 
@@ -959,12 +965,10 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// import_exception!(socket, gaierror);</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// fn main() {</span>
-<span class="doccomment">///     Python::with_gil(|py| {</span>
-<span class="doccomment">///         let ctx = [(&quot;gaierror&quot;, py.get_type::&lt;gaierror&gt;())].into_py_dict(py);</span>
-<span class="doccomment">///         pyo3::py_run!(py, *ctx, &quot;import socket; assert gaierror is socket.gaierror&quot;);</span>
-<span class="doccomment">///     });</span>
-<span class="doccomment">/// }</span>
+<span class="doccomment">/// Python::with_gil(|py| {</span>
+<span class="doccomment">///     let ctx = [(&quot;gaierror&quot;, py.get_type::&lt;gaierror&gt;())].into_py_dict(py);</span>
+<span class="doccomment">///     pyo3::py_run!(py, *ctx, &quot;import socket; assert gaierror is socket.gaierror&quot;);</span>
+<span class="doccomment">/// });</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
@@ -989,7 +993,7 @@
         );
 
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-            <span class="kw">fn</span> <span class="ident">type_object_raw</span>(<span class="ident">py</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Python</span>) -&gt; <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span> {
+            <span class="kw">fn</span> <span class="ident">type_object_raw</span>(<span class="ident">py</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Python</span>) -&gt; <span class="kw-2">*mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span> {
                 <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::once_cell::GILOnceCell</span>;
                 <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::AsPyPointer</span>;
                 <span class="kw">static</span> <span class="ident">TYPE_OBJECT</span>: <span class="ident">GILOnceCell</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Py</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::types::PyType</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -1010,7 +1014,7 @@
                         <span class="ident">cls</span>.<span class="ident">extract</span>()
                             .<span class="ident">expect</span>(<span class="string">&quot;Imported exception should be a type object&quot;</span>)
                     })
-                    .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>
+                    .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>
             }
         }
     };
@@ -1035,19 +1039,17 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// create_exception!(mymodule, CustomError, PyException);</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// fn main() {</span>
-<span class="doccomment">///     Python::with_gil(|py| {</span>
-<span class="doccomment">///         let error_type = py.get_type::&lt;CustomError&gt;();</span>
-<span class="doccomment">///         let ctx = [(&quot;CustomError&quot;, error_type)].into_py_dict(py);</span>
-<span class="doccomment">///         let type_description: String = py</span>
-<span class="doccomment">///             .eval(&quot;str(CustomError)&quot;, None, Some(&amp;ctx))</span>
-<span class="doccomment">///             .unwrap()</span>
-<span class="doccomment">///             .extract()</span>
-<span class="doccomment">///             .unwrap();</span>
-<span class="doccomment">///         assert_eq!(type_description, &quot;&lt;class &#39;mymodule.CustomError&#39;&gt;&quot;);</span>
-<span class="doccomment">///         pyo3::py_run!(py, *ctx, &quot;assert CustomError(&#39;oops&#39;).args == (&#39;oops&#39;,)&quot;);</span>
-<span class="doccomment">///    });</span>
-<span class="doccomment">/// }</span>
+<span class="doccomment">/// Python::with_gil(|py| {</span>
+<span class="doccomment">///     let error_type = py.get_type::&lt;CustomError&gt;();</span>
+<span class="doccomment">///     let ctx = [(&quot;CustomError&quot;, error_type)].into_py_dict(py);</span>
+<span class="doccomment">///     let type_description: String = py</span>
+<span class="doccomment">///         .eval(&quot;str(CustomError)&quot;, None, Some(&amp;ctx))</span>
+<span class="doccomment">///         .unwrap()</span>
+<span class="doccomment">///         .extract()</span>
+<span class="doccomment">///         .unwrap();</span>
+<span class="doccomment">///     assert_eq!(type_description, &quot;&lt;class &#39;mymodule.CustomError&#39;&gt;&quot;);</span>
+<span class="doccomment">///     pyo3::py_run!(py, *ctx, &quot;assert CustomError(&#39;oops&#39;).args == (&#39;oops&#39;,)&quot;);</span>
+<span class="doccomment">/// });</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">create_exception</span> {
@@ -1075,7 +1077,7 @@
         );
 
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-            <span class="kw">fn</span> <span class="ident">type_object_raw</span>(<span class="ident">py</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Python</span>) -&gt; <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span> {
+            <span class="kw">fn</span> <span class="ident">type_object_raw</span>(<span class="ident">py</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Python</span>) -&gt; <span class="kw-2">*mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span> {
                 <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::once_cell::GILOnceCell</span>;
                 <span class="kw">use</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::AsPyPointer</span>;
                 <span class="kw">static</span> <span class="ident">TYPE_OBJECT</span>: <span class="ident">GILOnceCell</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Py</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::types::PyType</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
@@ -1091,10 +1093,10 @@
                                 <span class="ident">::std::option::Option::Some</span>(<span class="ident">py</span>.<span class="ident">get_type</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">base</span><span class="op">&gt;</span>()),
                                 <span class="ident">::std::option::Option::None</span>,
                             )
-                            .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyObject</span>,
+                            .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyObject</span>,
                         )
                     })
-                    .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="kw">_</span>
+                    .<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>
             }
         }
     };
@@ -1107,10 +1109,26 @@
         <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyAny</span>);
 
         <span class="macro-nonterminal">$</span><span class="macro">crate::impl_exception_boilerplate!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
-        <span class="macro-nonterminal">$</span><span class="macro">crate::pyobject_native_type!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">layout</span>, <span class="kw-2">*</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span>));
+        <span class="macro-nonterminal">$</span><span class="macro">crate::pyobject_native_type!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">layout</span>, <span class="kw-2">*</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span>));
     );
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">expr</span>) =&gt; (
         <span class="macro">impl_native_exception!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyBaseExceptionObject</span>);
+    )
+);
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
+<span class="macro">macro_rules!</span> <span class="ident">impl_windows_native_exception</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">layout</span>:<span class="ident">path</span>) =&gt; (
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
+        <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>]</span>
+        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::upper_case_acronyms</span>)]</span>
+        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyAny</span>);
+
+        <span class="macro-nonterminal">$</span><span class="macro">crate::impl_exception_boilerplate!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">crate::pyobject_native_type!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">layout</span>, <span class="kw-2">*</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyTypeObject</span>));
+    );
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>:<span class="ident">expr</span>) =&gt; (
+        <span class="macro">impl_windows_native_exception!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_name</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">doc</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::ffi::PyBaseExceptionObject</span>);
     )
 );
 
@@ -1144,7 +1162,7 @@ fn always_throws() -&gt; PyResult&lt;()&gt; {
 # Python::with_gil(|py| {
 #     let fun = pyo3::wrap_pyfunction!(always_throws, py).unwrap();
 #     let err = fun.call0().expect_err(\&quot;called a function that should always return an error but the return value was Ok\&quot;);
-#     assert!(err.is_instance::&lt;Py&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;&gt;(py))
+#     assert!(err.is_instance_of::&lt;Py&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;&gt;(py))
 # });
 ```
 
@@ -1169,7 +1187,7 @@ Python::with_gil(|py| {
 
     let error_type = match result {
         Ok(_) =&gt; \&quot;Not an error\&quot;,
-        Err(error) if error.is_instance::&lt;Py&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;&gt;(py) =&gt; \&quot;&quot;</span> , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;\&quot;,
+        Err(error) if error.is_instance_of::&lt;Py&quot;</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;&gt;(py) =&gt; \&quot;&quot;</span> , <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="string">&quot;\&quot;,
         Err(_) =&gt; \&quot;Some other error\&quot;,
     };
 
@@ -1405,8 +1423,9 @@ Python::with_gil(|py| {
     <span class="macro">native_doc!</span>(<span class="string">&quot;EnvironmentError&quot;</span>)
 );
 <span class="macro">impl_native_exception!</span>(<span class="ident">PyIOError</span>, <span class="ident">PyExc_IOError</span>, <span class="macro">native_doc!</span>(<span class="string">&quot;IOError&quot;</span>));
+
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
-<span class="macro">impl_native_exception!</span>(
+<span class="macro">impl_windows_native_exception!</span>(
     <span class="ident">PyWindowsError</span>,
     <span class="ident">PyExc_WindowsError</span>,
     <span class="macro">native_doc!</span>(<span class="string">&quot;WindowsError&quot;</span>)
@@ -1424,7 +1443,7 @@ Python::with_gil(|py| {
         <span class="kw">unsafe</span> {
             <span class="ident">py</span>.<span class="ident">from_owned_ptr_or_err</span>(<span class="ident">ffi::PyUnicodeDecodeError_Create</span>(
                 <span class="ident">encoding</span>.<span class="ident">as_ptr</span>(),
-                <span class="ident">input</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_char</span>,
+                <span class="ident">input</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*const</span> <span class="ident">c_char</span>,
                 <span class="ident">input</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">ffi::Py_ssize_t</span>,
                 <span class="ident">range</span>.<span class="ident">start</span> <span class="kw">as</span> <span class="ident">ffi::Py_ssize_t</span>,
                 <span class="ident">range</span>.<span class="ident">end</span> <span class="kw">as</span> <span class="ident">ffi::Py_ssize_t</span>,
@@ -1487,15 +1506,15 @@ Python::with_gil(|py| {
                         .<span class="ident">unwrap_or</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty::new_err</span>(<span class="string">&quot;a test exception&quot;</span>))
                 };
 
-                <span class="macro">assert!</span>(<span class="ident">err</span>.<span class="ident">is_instance</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span><span class="op">&gt;</span>(<span class="ident">py</span>));
+                <span class="macro">assert!</span>(<span class="ident">err</span>.<span class="ident">is_instance_of</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span><span class="op">&gt;</span>(<span class="ident">py</span>));
 
-                <span class="kw">let</span> <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span> <span class="op">=</span> <span class="ident">err</span>.<span class="ident">instance</span>(<span class="ident">py</span>).<span class="ident">downcast</span>().<span class="ident">unwrap</span>();
+                <span class="kw">let</span> <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span> <span class="op">=</span> <span class="ident">err</span>.<span class="ident">value</span>(<span class="ident">py</span>).<span class="ident">downcast</span>().<span class="ident">unwrap</span>();
                 <span class="macro">assert!</span>(<span class="ident">value</span>.<span class="ident">source</span>().<span class="ident">is_none</span>());
 
                 <span class="ident">err</span>.<span class="ident">set_cause</span>(<span class="ident">py</span>, <span class="prelude-val">Some</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::exceptions::PyValueError::new_err</span>(<span class="string">&quot;a cause&quot;</span>)));
                 <span class="macro">assert!</span>(<span class="ident">value</span>.<span class="ident">source</span>().<span class="ident">is_some</span>());
 
-                <span class="macro">assert!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr::from</span>(<span class="ident">value</span>).<span class="ident">is_instance</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span><span class="op">&gt;</span>(<span class="ident">py</span>));
+                <span class="macro">assert!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::PyErr::from</span>(<span class="ident">value</span>).<span class="ident">is_instance_of</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">exc_ty</span><span class="op">&gt;</span>(<span class="ident">py</span>));
             })
         }
     };
@@ -1631,7 +1650,7 @@ Python::with_gil(|py| {
             <span class="kw">let</span> <span class="ident">exc</span> <span class="op">=</span> <span class="ident">py</span>
                 .<span class="ident">run</span>(<span class="string">&quot;raise Exception(&#39;banana&#39;)&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
                 .<span class="ident">expect_err</span>(<span class="string">&quot;raising should have given us an error&quot;</span>)
-                .<span class="ident">into_instance</span>(<span class="ident">py</span>)
+                .<span class="ident">into_value</span>(<span class="ident">py</span>)
                 .<span class="ident">into_ref</span>(<span class="ident">py</span>);
             <span class="macro">assert_eq!</span>(
                 <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">exc</span>),
@@ -1646,7 +1665,7 @@ Python::with_gil(|py| {
             <span class="kw">let</span> <span class="ident">exc</span> <span class="op">=</span> <span class="ident">py</span>
                 .<span class="ident">run</span>(<span class="string">&quot;raise Exception(&#39;banana&#39;)&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
                 .<span class="ident">expect_err</span>(<span class="string">&quot;raising should have given us an error&quot;</span>)
-                .<span class="ident">into_instance</span>(<span class="ident">py</span>)
+                .<span class="ident">into_value</span>(<span class="ident">py</span>)
                 .<span class="ident">into_ref</span>(<span class="ident">py</span>);
             <span class="macro">assert_eq!</span>(
                 <span class="ident">exc</span>.<span class="ident">to_string</span>(),
@@ -1667,22 +1686,14 @@ Python::with_gil(|py| {
                     <span class="prelude-val">None</span>,
                 )
                 .<span class="ident">expect_err</span>(<span class="string">&quot;raising should have given us an error&quot;</span>)
-                .<span class="ident">into_instance</span>(<span class="ident">py</span>)
+                .<span class="ident">into_value</span>(<span class="ident">py</span>)
                 .<span class="ident">into_ref</span>(<span class="ident">py</span>);
 
-            <span class="kw">if</span> <span class="ident">py</span>.<span class="ident">version_info</span>() <span class="op">&gt;</span><span class="op">=</span> (<span class="number">3</span>, <span class="number">7</span>) {
-                <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">exc</span>), <span class="string">&quot;Exception(&#39;banana&#39;)&quot;</span>);
-            } <span class="kw">else</span> {
-                <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">exc</span>), <span class="string">&quot;Exception(&#39;banana&#39;,)&quot;</span>);
-            }
+            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">exc</span>), <span class="string">&quot;Exception(&#39;banana&#39;)&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">exc</span>.<span class="ident">source</span>().<span class="ident">expect</span>(<span class="string">&quot;cause should exist&quot;</span>);
 
-            <span class="kw">if</span> <span class="ident">py</span>.<span class="ident">version_info</span>() <span class="op">&gt;</span><span class="op">=</span> (<span class="number">3</span>, <span class="number">7</span>) {
-                <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">source</span>), <span class="string">&quot;TypeError(&#39;peach&#39;)&quot;</span>);
-            } <span class="kw">else</span> {
-                <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">source</span>), <span class="string">&quot;TypeError(&#39;peach&#39;,)&quot;</span>);
-            }
+            <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">source</span>), <span class="string">&quot;TypeError(&#39;peach&#39;)&quot;</span>);
 
             <span class="kw">let</span> <span class="ident">source_source</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">source</span>();
             <span class="macro">assert!</span>(<span class="ident">source_source</span>.<span class="ident">is_none</span>(), <span class="string">&quot;source_source should be None&quot;</span>);
@@ -1705,7 +1716,7 @@ Python::with_gil(|py| {
             <span class="ident">e</span>.<span class="ident">restore</span>(<span class="ident">py</span>);
 
             <span class="macro">assert_eq!</span>(
-                <span class="ident">PyErr::api_call_failed</span>(<span class="ident">py</span>).<span class="ident">to_string</span>(),
+                <span class="ident">PyErr::fetch</span>(<span class="ident">py</span>).<span class="ident">to_string</span>(),
                 <span class="string">&quot;UnicodeDecodeError: \&#39;utf-8\&#39; codec can\&#39;t decode byte 0xd8 in position 2: invalid utf-8&quot;</span>
             );
         });
@@ -1745,7 +1756,7 @@ Python::with_gil(|py| {
     <span class="macro">test_exception!</span>(<span class="ident">PyUnicodeDecodeError</span>, <span class="op">|</span><span class="ident">py</span><span class="op">|</span> {
         <span class="kw">let</span> <span class="ident">invalid_utf8</span> <span class="op">=</span> <span class="string">b&quot;fo\xd8o&quot;</span>;
         <span class="kw">let</span> <span class="ident">err</span> <span class="op">=</span> <span class="ident">std::str::from_utf8</span>(<span class="ident">invalid_utf8</span>).<span class="ident">expect_err</span>(<span class="string">&quot;should be invalid utf8&quot;</span>);
-        <span class="ident">PyErr::from_instance</span>(<span class="ident">PyUnicodeDecodeError::new_utf8</span>(<span class="ident">py</span>, <span class="ident">invalid_utf8</span>, <span class="ident">err</span>).<span class="ident">unwrap</span>())
+        <span class="ident">PyErr::from_value</span>(<span class="ident">PyUnicodeDecodeError::new_utf8</span>(<span class="ident">py</span>, <span class="ident">invalid_utf8</span>, <span class="ident">err</span>).<span class="ident">unwrap</span>())
     });
     <span class="macro">test_exception!</span>(<span class="ident">PyUnicodeEncodeError</span>, <span class="op">|</span><span class="ident">py</span>: <span class="ident">Python</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">|</span> {
         <span class="ident">py</span>.<span class="ident">eval</span>(<span class="string">&quot;chr(40960).encode(&#39;ascii&#39;)&quot;</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
@@ -1777,6 +1788,5 @@ Python::with_gil(|py| {
     <span class="macro">test_exception!</span>(<span class="ident">PyWindowsError</span>);
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (0b6f079e4 2021-12-07)" ></div>
 </body></html>
