@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Logging - PyO3 user guide</title>
+        <title>Emulating callable objects - PyO3 user guide</title>
                 
 
         <!-- Custom HTML head -->
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../module.html"><strong aria-hidden="true">1.</strong> Python Modules</a></li><li class="chapter-item expanded "><a href="../function.html"><strong aria-hidden="true">2.</strong> Python Functions</a></li><li class="chapter-item expanded "><a href="../class.html"><strong aria-hidden="true">3.</strong> Python Classes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../class/protocols.html"><strong aria-hidden="true">3.1.</strong> Class customizations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../class/call.html"><strong aria-hidden="true">3.1.1.</strong> Emulating callable objects</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../conversions.html"><strong aria-hidden="true">4.</strong> Type Conversions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../conversions/tables.html"><strong aria-hidden="true">4.1.</strong> Mapping of Rust types to Python types</a></li><li class="chapter-item expanded "><a href="../conversions/traits.html"><strong aria-hidden="true">4.2.</strong> Conversion traits</a></li></ol></li><li class="chapter-item expanded "><a href="../exception.html"><strong aria-hidden="true">5.</strong> Python Exceptions</a></li><li class="chapter-item expanded "><a href="../python_from_rust.html"><strong aria-hidden="true">6.</strong> Calling Python from Rust</a></li><li class="chapter-item expanded "><a href="../types.html"><strong aria-hidden="true">7.</strong> GIL, mutability and object types</a></li><li class="chapter-item expanded "><a href="../parallelism.html"><strong aria-hidden="true">8.</strong> Parallelism</a></li><li class="chapter-item expanded "><a href="../debugging.html"><strong aria-hidden="true">9.</strong> Debugging</a></li><li class="chapter-item expanded "><a href="../features.html"><strong aria-hidden="true">10.</strong> Features Reference</a></li><li class="chapter-item expanded "><a href="../memory.html"><strong aria-hidden="true">11.</strong> Memory Management</a></li><li class="chapter-item expanded "><a href="../advanced.html"><strong aria-hidden="true">12.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="../building_and_distribution.html"><strong aria-hidden="true">13.</strong> Building and Distribution</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../building_and_distribution/multiple_python_versions.html"><strong aria-hidden="true">13.1.</strong> Supporting multiple Python versions</a></li></ol></li><li class="chapter-item expanded "><a href="../ecosystem.html"><strong aria-hidden="true">14.</strong> Useful Crates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ecosystem/logging.html" class="active"><strong aria-hidden="true">14.1.</strong> Logging</a></li><li class="chapter-item expanded "><a href="../ecosystem/async-await.html"><strong aria-hidden="true">14.2.</strong> Async / Await</a></li></ol></li><li class="chapter-item expanded "><a href="../faq.html"><strong aria-hidden="true">15.</strong> FAQ &amp; Troubleshooting</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../migration.html">Appendix A: Migration Guide</a></li><li class="chapter-item expanded affix "><a href="../rust_cpython.html">Appendix B: PyO3 and rust-cpython</a></li><li class="chapter-item expanded affix "><a href="../trait_bounds.html">Appendix C: Trait bounds</a></li><li class="chapter-item expanded affix "><a href="../python_typing_hints.html">Appendix D: Python typing hints</a></li><li class="chapter-item expanded affix "><a href="../changelog.html">CHANGELOG</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../module.html"><strong aria-hidden="true">1.</strong> Python Modules</a></li><li class="chapter-item expanded "><a href="../function.html"><strong aria-hidden="true">2.</strong> Python Functions</a></li><li class="chapter-item expanded "><a href="../class.html"><strong aria-hidden="true">3.</strong> Python Classes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../class/protocols.html"><strong aria-hidden="true">3.1.</strong> Class customizations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../class/call.html" class="active"><strong aria-hidden="true">3.1.1.</strong> Emulating callable objects</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../conversions.html"><strong aria-hidden="true">4.</strong> Type Conversions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../conversions/tables.html"><strong aria-hidden="true">4.1.</strong> Mapping of Rust types to Python types</a></li><li class="chapter-item expanded "><a href="../conversions/traits.html"><strong aria-hidden="true">4.2.</strong> Conversion traits</a></li></ol></li><li class="chapter-item expanded "><a href="../exception.html"><strong aria-hidden="true">5.</strong> Python Exceptions</a></li><li class="chapter-item expanded "><a href="../python_from_rust.html"><strong aria-hidden="true">6.</strong> Calling Python from Rust</a></li><li class="chapter-item expanded "><a href="../types.html"><strong aria-hidden="true">7.</strong> GIL, mutability and object types</a></li><li class="chapter-item expanded "><a href="../parallelism.html"><strong aria-hidden="true">8.</strong> Parallelism</a></li><li class="chapter-item expanded "><a href="../debugging.html"><strong aria-hidden="true">9.</strong> Debugging</a></li><li class="chapter-item expanded "><a href="../features.html"><strong aria-hidden="true">10.</strong> Features Reference</a></li><li class="chapter-item expanded "><a href="../memory.html"><strong aria-hidden="true">11.</strong> Memory Management</a></li><li class="chapter-item expanded "><a href="../advanced.html"><strong aria-hidden="true">12.</strong> Advanced Topics</a></li><li class="chapter-item expanded "><a href="../building_and_distribution.html"><strong aria-hidden="true">13.</strong> Building and Distribution</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../building_and_distribution/multiple_python_versions.html"><strong aria-hidden="true">13.1.</strong> Supporting multiple Python versions</a></li></ol></li><li class="chapter-item expanded "><a href="../ecosystem.html"><strong aria-hidden="true">14.</strong> Useful Crates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ecosystem/logging.html"><strong aria-hidden="true">14.1.</strong> Logging</a></li><li class="chapter-item expanded "><a href="../ecosystem/async-await.html"><strong aria-hidden="true">14.2.</strong> Async / Await</a></li></ol></li><li class="chapter-item expanded "><a href="../faq.html"><strong aria-hidden="true">15.</strong> FAQ &amp; Troubleshooting</a></li><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../migration.html">Appendix A: Migration Guide</a></li><li class="chapter-item expanded affix "><a href="../rust_cpython.html">Appendix B: PyO3 and rust-cpython</a></li><li class="chapter-item expanded affix "><a href="../trait_bounds.html">Appendix C: Trait bounds</a></li><li class="chapter-item expanded affix "><a href="../python_typing_hints.html">Appendix D: Python typing hints</a></li><li class="chapter-item expanded affix "><a href="../changelog.html">CHANGELOG</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -143,69 +143,120 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="logging"><a class="header" href="#logging">Logging</a></h1>
-<p>It is desirable if both the Python and Rust parts of the application end up
-logging using the same configuration into the same place.</p>
-<p>This section of the guide briefly discusses how to connect the two languages'
-logging ecosystems together. The recommended way for Python extension modules is
-to configure Rust's logger to send log messages to Python using the <code>pyo3-log</code>
-crate. For users who want to do the opposite and send Python log messages to
-Rust, see the note at the end of this guide.</p>
-<h2 id="using-pyo3-log-to-send-rust-log-messages-to-python"><a class="header" href="#using-pyo3-log-to-send-rust-log-messages-to-python">Using <code>pyo3-log</code> to send Rust log messages to Python</a></h2>
-<p>The <a href="https://crates.io/crates/pyo3-log">pyo3-log</a> crate allows sending the messages from the Rust side to Python's
-<a href="https://docs.python.org/3/library/logging.html">logging</a> system. This is mostly suitable for writing native extensions for
-Python programs.</p>
-<p>Use <a href="https://docs.rs/pyo3-log/*/pyo3_log/fn.init.html"><code>pyo3_log::init</code></a> to install the logger in its default configuration.
-It's also possible to tweak its configuration (mostly to tune its performance).</p>
+                        <h1 id="emulating-callable-objects"><a class="header" href="#emulating-callable-objects">Emulating callable objects</a></h1>
+<p>Classes can be callable if they have a <code>#[pymethod]</code> named <code>__call__</code>.
+This allows instances of a class to behave similar to functions.</p>
+<p>This method's signature must look like <code>__call__(&lt;self&gt;, ...) -&gt; object</code> - here,
+any argument list can be defined as for normal pymethods</p>
+<h3 id="example-implementing-a-call-counter"><a class="header" href="#example-implementing-a-call-counter">Example: Implementing a call counter</a></h3>
+<p>The following pyclass is a basic decorator - its constructor takes a Python object
+as argument and calls that object when called. An equivalent Python implementation
+is linked at the end.</p>
+<p>An example crate containing this pyclass can be found <a href="https://github.com/PyO3/pyo3/tree/main/examples/decorator">here</a></p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use log::info;
-use pyo3::prelude::*;
+</span>use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyTuple};
 
-#[pyfunction]
-fn log_something() {
-    // This will use the logger installed in `my_module` to send the `info`
-    // message to the Python logging facilities.
-    info!(&quot;Something!&quot;);
+/// A function decorator that keeps track how often it is called.
+///
+/// It otherwise doesn't do anything special.
+#[pyclass(name = &quot;Counter&quot;)]
+pub struct PyCounter {
+    // We use `#[pyo3(get)]` so that python can read the count but not mutate it.
+    #[pyo3(get)]
+    count: u64,
+
+    // This is the actual function being wrapped.
+    wraps: Py&lt;PyAny&gt;,
+}
+
+#[pymethods]
+impl PyCounter {
+    // Note that we don't validate whether `wraps` is actually callable.
+    //
+    // While we could use `PyAny::is_callable` for that, it has some flaws:
+    //    1. It doesn't guarantee the object can actually be called successfully
+    //    2. We still need to handle any exceptions that the function might raise
+    #[new]
+    fn __new__(wraps: Py&lt;PyAny&gt;) -&gt; Self {
+        PyCounter { count: 0, wraps }
+    }
+
+    #[args(args = &quot;*&quot;, kwargs = &quot;**&quot;)]
+    fn __call__(
+        &amp;mut self,
+        py: Python,
+        args: &amp;PyTuple,
+        kwargs: Option&lt;&amp;PyDict&gt;,
+    ) -&gt; PyResult&lt;Py&lt;PyAny&gt;&gt; {
+        self.count += 1;
+        let name = self.wraps.getattr(py, &quot;__name__&quot;)?;
+
+        println!(&quot;{} has been called {} time(s).&quot;, name, self.count);
+
+        // After doing something, we finally forward the call to the wrapped function
+        let ret = self.wraps.call(py, args, kwargs);
+
+        // We could do something with the return value of
+        // the function before returning it
+        ret
+    }
 }
 
 #[pymodule]
-fn my_module(_py: Python&lt;'_&gt;, m: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
-    // A good place to install the Rust -&gt; Python logger.
-    pyo3_log::init();
-
-    m.add_function(wrap_pyfunction!(log_something))?;
+pub fn decorator(_py: Python, module: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
+    module.add_class::&lt;PyCounter&gt;()?;
     Ok(())
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>Then it is up to the Python side to actually output the messages somewhere.</p>
-<pre><code class="language-python">import logging
-import my_module
-
-FORMAT = '%(levelname)s %(name)s %(asctime)-15s %(filename)s:%(lineno)d %(message)s'
-logging.basicConfig(format=FORMAT)
-logging.getLogger().setLevel(logging.INFO)
-my_module.log_something()
+<p>Python code:</p>
+<pre><code class="language-python">{{#include ../../../examples/decorator/src/test.py}}
 </code></pre>
-<p>It is important to initialize the Python loggers first, before calling any Rust
-functions that may log. This limitation can be worked around if it is not
-possible to satisfy, read the documentation about <a href="https://docs.rs/pyo3-log/*/pyo3_log/#performance-filtering-and-caching">caching</a>.</p>
-<h2 id="the-python-to-rust-direction"><a class="header" href="#the-python-to-rust-direction">The Python to Rust direction</a></h2>
-<p>To best of our knowledge nobody implemented the reverse direction yet, though it
-should be possible. If interested, the <code>pyo3</code> community would be happy to
-provide guidance.</p>
+<p>Output:</p>
+<pre><code class="language-text">say_hello has been called 1 time(s).
+hello
+say_hello has been called 2 time(s).
+hello
+say_hello has been called 3 time(s).
+hello
+say_hello has been called 4 time(s).
+hello
+</code></pre>
+<h4 id="pure-python-implementation"><a class="header" href="#pure-python-implementation">Pure Python implementation</a></h4>
+<p>A Python implementation of this looks similar to the Rust version:</p>
+<pre><code class="language-python">class Counter:
+    def __init__(self, wraps):
+        self.count = 0
+        self.wraps = wraps
+
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        print(f&quot;{self.wraps.__name__} has been called {self.count} time(s)&quot;)
+        self.wraps(*args, **kwargs)
+</code></pre>
+<p>Note that it can also be implemented as a higher order function:</p>
+<pre><code class="language-python">def Counter(wraps):
+    count = 0
+    def call(*args, **kwargs):
+        nonlocal count
+        count += 1
+        print(f&quot;{wraps.__name__} has been called {count} time(s)&quot;)
+        return wraps(*args, **kwargs)
+    return call
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                                                    <a rel="prev" href="../ecosystem.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                                    <a rel="prev" href="../class/protocols.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
-                                                    <a rel="next" href="../ecosystem/async-await.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                                    <a rel="next" href="../conversions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -215,11 +266,11 @@ provide guidance.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                                    <a rel="prev" href="../ecosystem.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <a rel="prev" href="../class/protocols.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
-                                    <a rel="next" href="../ecosystem/async-await.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                    <a rel="next" href="../conversions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                             </nav>
