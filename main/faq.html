@@ -258,6 +258,25 @@ print(f&quot;a: {a}\nb: {b}&quot;)
 b: &lt;builtins.Inner object at 0x0000020044FCC670&gt;
 </code></pre>
 <p>The downside to this approach is that any Rust code working on the <code>Outer</code> struct now has to acquire the GIL to do anything with its field.</p>
+<h2 id="i-want-to-use-the-pyo3-crate-re-exported-from-from-dependency-but-the-proc-macros-fail"><a class="header" href="#i-want-to-use-the-pyo3-crate-re-exported-from-from-dependency-but-the-proc-macros-fail">I want to use the <code>pyo3</code> crate re-exported from from dependency but the proc-macros fail!</a></h2>
+<p>All PyO3 proc-macros (<code>#[pyclass]</code>, <code>#[pyfunction]</code>, <code>#[derive(FromPyObject)]</code>
+and so on) expect the <code>pyo3</code> crate to be available under that name in your crate
+root, which is the normal situation when <code>pyo3</code> is a direct dependency of your
+crate.</p>
+<p>However, when the dependency is renamed, or your crate only indirectly depends
+on <code>pyo3</code>, you need to let the macro code know where to find the crate.  This is
+done with the <code>crate</code> attribute:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span><span class="boring">pub extern crate pyo3;
+</span><span class="boring">mod reexported { pub use ::pyo3; }
+</span>#[pyclass]
+#[pyo3(crate = &quot;reexported::pyo3&quot;)]
+struct MyClass;
+<span class="boring">}
+</span></code></pre></pre>
 
                     </main>
 
