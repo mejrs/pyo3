@@ -985,8 +985,8 @@
                 <span class="comment">// to specify `--features auto-initialize` manually. Tests within the crate itself</span>
                 <span class="comment">// all depend on the auto-initialize feature for conciseness but Cargo does not</span>
                 <span class="comment">// provide a mechanism to specify required features for tests.</span>
+                <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
                 <span class="kw">if</span> <span class="macro">option_env!</span>(<span class="string">&quot;CARGO_PRIMARY_PACKAGE&quot;</span>).<span class="ident">is_some</span>() {
-                    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
                     <span class="ident">prepare_freethreaded_python</span>();
                 }
 
@@ -1598,5 +1598,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (8f117a77d 2021-12-13)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (404c8471a 2021-12-14)" ></div>
 </body></html>
