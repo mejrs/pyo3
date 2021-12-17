@@ -6187,6 +6187,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>Add <code>PyCapsule</code>, exposing the <a href="https://docs.python.org/3/c-api/capsule.html#capsules">Capsule API</a>. <a href="https://github.com/PyO3/pyo3/pull/1980">#1980</a></li>
 <li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies
 where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
+<li>Expose <code>pyo3-build-config</code> APIs for cross-compiling and Python configuration discovery for use in other projects. <a href="https://github.com/PyO3/pyo3/pull/1996">#1996</a></li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
