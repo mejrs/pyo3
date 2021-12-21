@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["CLOSURE_CAPSULE_NAME",""]],"fn":[["drop_closure",""],["run_closure",""]],"struct":[["PyCFunction","Represents a builtin Python function object."],["PyFunction","Represents a Python function object."]]});

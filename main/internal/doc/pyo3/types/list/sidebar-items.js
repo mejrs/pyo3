@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["new_from_iter",""]],"struct":[["PyList","Represents a Python `list`."],["PyListIterator","Used by `PyList::iter()`."]]});

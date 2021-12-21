@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["PyFrozenSet","Represents a  Python `frozenset`"],["PySet","Represents a Python `set`"],["PySetIterator",""]]});

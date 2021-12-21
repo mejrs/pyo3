@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["capsule_destructor",""]],"struct":[["CapsuleContents",""],["PyCapsule","Represents a Python Capsule as described in Capsules:"]],"trait":[["AssertNotZeroSized","Guarantee `T` is not zero sized at compile time."]]});

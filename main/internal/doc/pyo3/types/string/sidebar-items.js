@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["PyStringData","Represents raw data backing a Python `str`."]],"struct":[["PyString","Represents a Python `string` (a Unicode string object)."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["PyByteArray","Represents a Python `bytearray`."]]});
