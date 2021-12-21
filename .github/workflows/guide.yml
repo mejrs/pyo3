@@ -59,10 +59,11 @@ jobs:
 
       - name: Build the internal docs
         run: |
-          echo "<p>&#9888; Internal Docs &#9888;<br>Not Public API<br><a href='https://pyo3.rs/main/doc/pyo3/index.html' style='color:white;text-decoration:underline;'>Official Docs Here</a></p>" > gh-pages-build/internal/banner.html
+          
+          echo "<p>&#9888; Internal Docs &#9888;<br>Not Public API<br><a href='https://pyo3.rs/main/doc/pyo3/index.html' style='color:white;text-decoration:underline;'>Official Docs Here</a></p>" > gh-pages-build/banner.html
           cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
         env:
-          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items --html-before-content banner.html"
+          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items --html-before-content gh-pages-build/banner.html"
 
       - name: Deploy internal docs
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
