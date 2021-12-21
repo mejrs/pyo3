@@ -1,5 +1,5 @@
-/home/runner/work/pyo3/pyo3/gh-pages-build/debug/deps/indenter-5a8d589747318cde.rmeta: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/indenter-0.3.3/src/lib.rs
+/home/runner/work/pyo3/pyo3/gh-pages-build/internal/debug/deps/indenter-5a8d589747318cde.rmeta: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/indenter-0.3.3/src/lib.rs
 
-/home/runner/work/pyo3/pyo3/gh-pages-build/debug/deps/indenter-5a8d589747318cde.d: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/indenter-0.3.3/src/lib.rs
+/home/runner/work/pyo3/pyo3/gh-pages-build/internal/debug/deps/indenter-5a8d589747318cde.d: /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/indenter-0.3.3/src/lib.rs
 
 /home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/indenter-0.3.3/src/lib.rs:
