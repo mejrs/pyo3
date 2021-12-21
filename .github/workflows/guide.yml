@@ -48,7 +48,7 @@ jobs:
           cp -r target/doc gh-pages-build/doc
           echo "<meta http-equiv=refresh content=0;url=pyo3/index.html>" > gh-pages-build/doc/index.html
 
-      - name: Deploy
+      - name: Deploy docs and the guide
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -57,14 +57,14 @@ jobs:
           destination_dir: ${{ steps.prepare_tag.outputs.tag_name }}
           full_commit_message: "Upload documentation for ${{ steps.prepare_tag.outputs.tag_name }}"
 
-      # Delete the guide and build internal docs
       - name: Build the internal docs
         run: |
-          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
+          echo "<p>&#9888; Internal Docs &#9888;<br>Not Public API<br><a href="https://pyo3.rs/main/doc/pyo3/index.html" style="color:white;text-decoration:underline;">Official Docs Here</a></p>" > gh-pages-build/internal/banner.html
+          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
         env:
-          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items"
+          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items --html-before-content banner.html"
 
-      - name: Deploy internal
+      - name: Deploy internal docs
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
