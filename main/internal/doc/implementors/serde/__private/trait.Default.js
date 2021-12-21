@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["serde"] = [{"text":"impl <a class=\"trait\" href=\"serde/__private/trait.Default.html\" title=\"trait serde::__private::Default\">Default</a> for <a class=\"struct\" href=\"serde/de/struct.IgnoredAny.html\" title=\"struct serde::de::IgnoredAny\">IgnoredAny</a>","synthetic":false,"types":["serde::de::ignored_any::IgnoredAny"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

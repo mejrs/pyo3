@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IntoIter","An iterator over `TokenStream`’s `TokenTree`s."],["TokenStream","An abstract stream of tokens, or more concretely a sequence of token trees."]]});

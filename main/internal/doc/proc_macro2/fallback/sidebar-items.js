@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["force","Force use of proc-macro2’s fallback implementation of the API for now, even if the compiler’s implementation is available."],["unforce","Resume using the compiler’s implementation of the proc macro API if it is available."]]});
