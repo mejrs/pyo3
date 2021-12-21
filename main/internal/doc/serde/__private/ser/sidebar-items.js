@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["constrain","Used to check that serde(getter) attributes return the expected type. Not public API."],["serialize_tagged_newtype","Not public API."]],"struct":[["FlatMapSerializeMap",""],["FlatMapSerializeStruct",""],["FlatMapSerializeStructVariantAsMapValue",""],["FlatMapSerializer",""]]});

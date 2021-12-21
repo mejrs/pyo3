@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["ahash","anyhow","cfg_if","ctor","decorator","eyre","getrandom","ghost","hashbrown","indenter","indexmap","indoc","instant","inventory","libc","lock_api","num_bigint","num_complex","num_integer","num_traits","once_cell","parking_lot","parking_lot_core","paste","proc_macro2","pyo3","pyo3_build_config","pyo3_macros","pyo3_macros_backend","quote","scopeguard","serde","serde_derive","smallvec","syn","unicode_xid","unindent"];
+window.ALL_CRATES = ["decorator","pyo3","pyo3_build_config","pyo3_macros","pyo3_macros_backend"];

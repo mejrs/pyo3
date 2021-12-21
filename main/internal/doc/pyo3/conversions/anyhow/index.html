@@ -40,7 +40,7 @@ The required anyhow version may vary based on the version of PyO3.</p>
     <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">error</span>);
 }</code></pre></div>
 <h2 id="example-using-anyhow-in-general" class="section-header"><a href="#example-using-anyhow-in-general">Example: Using <code>anyhow</code> in general</a></h2>
-<p>Note that you don’t need this feature to convert a <a href="../../err/struct.PyErr.html" title="PyErr"><code>PyErr</code></a> into an <a href="../../../anyhow/struct.Error.html" title="anyhow::Error"><code>anyhow::Error</code></a>, because
+<p>Note that you don’t need this feature to convert a <a href="../../err/struct.PyErr.html" title="PyErr"><code>PyErr</code></a> into an <a href="https://docs.rs/anyhow/1.0.51/anyhow/struct.Error.html" title="anyhow::Error"><code>anyhow::Error</code></a>, because
 it can already convert anything that implements <a href="https://doc.rust-lang.org/nightly/std/error/trait.Error.html"><code>Error</code></a>:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">pyo3::prelude</span>::<span class="kw-2">*</span>;

@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["new_adhoc",""]],"mod":[["kind",""]]});
