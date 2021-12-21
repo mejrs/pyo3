@@ -57,9 +57,10 @@ jobs:
           destination_dir: ${{ steps.prepare_tag.outputs.tag_name }}
           full_commit_message: "Upload documentation for ${{ steps.prepare_tag.outputs.tag_name }}"
 
-      - name: Build the internal doc
+      # Delete the guide and build internal docs
+      - name: Build the internal docs
         run: |
-          cargo +nightly doc --target-dir="gh-pages-build" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
+          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
         env:
           RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items"
 
@@ -68,9 +69,9 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-build/
+          publish_dir: ./gh-pages-build/internal
           destination_dir: internal
-          full_commit_message: "Upload documentation for ${{ steps.prepare_tag.outputs.tag_name }}"
+          full_commit_message: "Upload internal documentation"
 
   release:
     needs: build
