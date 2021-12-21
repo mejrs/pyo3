@@ -48,12 +48,6 @@ jobs:
           cp -r target/doc gh-pages-build/doc
           echo "<meta http-equiv=refresh content=0;url=pyo3/index.html>" > gh-pages-build/doc/index.html
 
-      - name: Build the internal doc
-        run: |
-          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
-        env:
-          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items"
-
       - name: Deploy
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
         uses: peaceiris/actions-gh-pages@v3
@@ -61,6 +55,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./gh-pages-build/
           destination_dir: ${{ steps.prepare_tag.outputs.tag_name }}
+          full_commit_message: "Upload documentation for ${{ steps.prepare_tag.outputs.tag_name }}"
+
+      - name: Build the internal doc
+        run: |
+          cargo +nightly doc --target-dir="gh-pages-build" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
+        env:
+          RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items"
+
+      - name: Deploy internal
+        if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-build/
+          destination_dir: internal
           full_commit_message: "Upload documentation for ${{ steps.prepare_tag.outputs.tag_name }}"
 
   release:
