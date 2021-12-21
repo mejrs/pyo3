@@ -44,9 +44,15 @@ jobs:
         # This adds the docs to gh-pages-build/doc
       - name: Build the doc
         run: |
-          cargo +nightly rustdoc --lib --no-default-features --features="macros num-bigint num-complex hashbrown indexmap serde multiple-pymethods eyre anyhow" -- --cfg docsrs
+          cargo +nightly pyo3_doc_scrape
           cp -r target/doc gh-pages-build/doc
           echo "<meta http-equiv=refresh content=0;url=pyo3/index.html>" > gh-pages-build/doc/index.html
+
+      - name: Build the internal doc
+        run: |
+          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
+        env:
+          RUSTDOCFLAGS: "--cfg docsrs --document-hidden-items"
 
       - name: Deploy
         if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
