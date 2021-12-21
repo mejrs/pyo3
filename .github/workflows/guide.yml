@@ -50,7 +50,7 @@ jobs:
 
       - name: Build the internal doc
         run: |
-          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
+          cargo +nightly doc --target-dir="gh-pages-build/internal" --lib --no-default-features --features=full --no-deps --workspace --open --document-private-items -Z unstable-options -Z rustdoc-scrape-examples=examples
         env:
           RUSTDOCFLAGS: "--cfg docsrs --Z unstable-options --document-hidden-items"
 
