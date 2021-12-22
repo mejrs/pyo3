@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["decorator"] = [{"text":"impl PyClassDescriptors&lt;<a class=\"struct\" href=\"decorator/struct.PyCounter.html\" title=\"struct decorator::PyCounter\">PyCounter</a>&gt; for PyClassImplCollector&lt;<a class=\"struct\" href=\"decorator/struct.PyCounter.html\" title=\"struct decorator::PyCounter\">PyCounter</a>&gt;","synthetic":false,"types":["pyo3::class::impl_::PyClassImplCollector"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
