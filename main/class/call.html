@@ -213,7 +213,17 @@ pub fn decorator(_py: Python, module: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
 <span class="boring">}
 </span></code></pre></pre>
 <p>Python code:</p>
-<pre><code class="language-python">{{#include ../../../examples/decorator/src/test.py}}
+<pre><code class="language-python">@Counter
+def say_hello():
+    print(&quot;hello&quot;)
+
+
+say_hello()
+say_hello()
+say_hello()
+say_hello()
+
+assert say_hello.count == 4
 </code></pre>
 <p>Output:</p>
 <pre><code class="language-text">say_hello has been called 1 time(s).
