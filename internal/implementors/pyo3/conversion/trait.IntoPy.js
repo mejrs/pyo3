@@ -1,4 +1,0 @@
-(function() {var implementors = {};
-implementors["decorator"] = [{"text":"impl <a class=\"trait\" href=\"pyo3/conversion/trait.IntoPy.html\" title=\"trait pyo3::conversion::IntoPy\">IntoPy</a>&lt;<a class=\"struct\" href=\"pyo3/instance/struct.Py.html\" title=\"struct pyo3::instance::Py\">Py</a>&lt;<a class=\"struct\" href=\"pyo3/types/any/struct.PyAny.html\" title=\"struct pyo3::types::any::PyAny\">PyAny</a>&gt;&gt; for <a class=\"struct\" href=\"decorator/struct.PyCounter.html\" title=\"struct decorator::PyCounter\">PyCounter</a>","synthetic":false,"types":["decorator::PyCounter"]}];
-implementors["pyo3"] = [];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
