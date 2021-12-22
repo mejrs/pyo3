@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["decorator"] = [{"text":"impl <a class=\"trait\" href=\"pyo3/pyclass/trait.PyClass.html\" title=\"trait pyo3::pyclass::PyClass\">PyClass</a> for <a class=\"struct\" href=\"decorator/struct.PyCounter.html\" title=\"struct decorator::PyCounter\">PyCounter</a>","synthetic":false,"types":["decorator::PyCounter"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
