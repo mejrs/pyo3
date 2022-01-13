@@ -153,10 +153,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <ul>
 <li>Update MSRV to Rust 1.48. <a href="https://github.com/PyO3/pyo3/pull/2004">#2004</a></li>
 <li>Update <code>indoc</code> optional dependency to 1.0. <a href="https://github.com/PyO3/pyo3/pull/2004">#2004</a></li>
-<li>Update <code>paste</code> optional dependency to 1.0. <a href="https://github.com/PyO3/pyo3/pull/2004">#2004</a></li>
 <li>Drop support for Python 3.6, remove <code>abi3-py36</code> feature. <a href="https://github.com/PyO3/pyo3/pull/2006">#2006</a></li>
 <li><code>pyo3-build-config</code> no longer enables the <code>resolve-config</code> feature by default. <a href="https://github.com/PyO3/pyo3/pull/2008">#2008</a></li>
 <li>Update <code>inventory</code> optional dependency to 0.2. <a href="https://github.com/PyO3/pyo3/pull/2019">#2019</a></li>
+<li>Drop <code>paste</code> dependency. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
 </ul>
 <h3 id="added"><a class="header" href="#added">Added</a></h3>
 <ul>
@@ -165,6 +165,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies
 where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
 <li>Expose <code>pyo3-build-config</code> APIs for cross-compiling and Python configuration discovery for use in other projects. <a href="https://github.com/PyO3/pyo3/pull/1996">#1996</a></li>
+<li>Add buffer magic methods <code>__getbuffer__</code> and <code>__releasebuffer__</code> to <code>#[pymethods]</code>. <a href="https://github.com/PyO3/pyo3/pull/2067">#2067</a></li>
+<li>Accept paths in <code>wrap_pyfunction</code> and <code>wrap_pymodule</code>. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li>Add check for correct number of arguments on magic methods. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
+<li><code>wrap_pyfunction!</code> can now wrap a <code>#[pyfunction]</code> which is implemented in a different Rust module or crate. <a href="https://github.com/PyO3/pyo3/pull/2091">#2091</a></li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
@@ -179,10 +183,19 @@ where to find the <code>pyo3</code> crate, in case it has been renamed or is re-
 </ul>
 </li>
 <li>Deprecate <code>PyType::is_instance</code>; it is inconsistent with other <code>is_instance</code> methods in PyO3. Instead of <code>typ.is_instance(obj)</code>, use <code>obj.is_instance(typ)</code>. <a href="https://github.com/PyO3/pyo3/pull/2031">#2031</a></li>
-<li>Optional parameters of <code>#[pymethods]</code> and <code>#[pyfunction]</code>s cannot be followed by required parameters, i.e. <code>fn opt_first(a: Option&lt;i32&gt;, b: i32) {}</code> is not allowed, while <code>fn opt_last(a:i32, b: Option&lt;i32&gt;) {}</code> is. <a href="https://github.com/PyO3/pyo3/pull/2041">#2041</a></li>
 <li><code>PyErr::new_type</code> now takes an optional docstring and now returns <code>PyResult&lt;Py&lt;PyType&gt;&gt;</code> rather than a <code>ffi::PyTypeObject</code> pointer.</li>
 <li>The <code>create_exception!</code> macro can now take an optional docstring. This docstring, if supplied, is visible to users (with <code>.__doc__</code> and <code>help()</code>) and
 accompanies your error type in your crate's documentation.</li>
+<li>Improve performance and error messages for <code>#[derive(FromPyObject)]</code> for enums. <a href="https://github.com/PyO3/pyo3/pull/2068">#2068</a></li>
+<li>Reduce generated LLVM code size (to improve compile times) for:
+<ul>
+<li>internal <code>handle_panic</code> helper <a href="https://github.com/PyO3/pyo3/pull/2074">#2074</a></li>
+<li><code>#[pyfunction]</code> and <code>#[pymethods]</code> argument extraction <a href="https://github.com/PyO3/pyo3/pull/2075">#2075</a> <a href="https://github.com/PyO3/pyo3/pull/2085">#2085</a></li>
+<li><code>#[pyclass]</code> type object creation <a href="https://github.com/PyO3/pyo3/pull/2076">#2076</a> <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+</ul>
+</li>
+<li><code>__ipow__</code> now supports modulo argument on Python 3.8+. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
+<li><code>pyo3-macros-backend</code> is now compiled with PyO3 cfgs to enable different magic method definitions based on version. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
 </ul>
 <h3 id="removed"><a class="header" href="#removed">Removed</a></h3>
 <ul>
@@ -194,6 +207,8 @@ accompanies your error type in your crate's documentation.</li>
 <li>Fix memory leak in <code>PyErr::into_value</code>. <a href="https://github.com/PyO3/pyo3/pull/2026">#2026</a></li>
 <li>Fix clippy warning <code>needless-option-as-deref</code> in code generated by <code>#[pyfunction]</code> and <code>#[pymethods]</code>. <a href="https://github.com/PyO3/pyo3/pull/2040">#2040</a></li>
 <li>Fix undefined behavior in <code>PySlice::indices</code>. <a href="https://github.com/PyO3/pyo3/pull/2061">#2061</a></li>
+<li>Use the Rust function path for <code>wrap_pymodule!</code> of a <code>#[pymodule]</code> with a <code>#[pyo3(name = &quot;..&quot;)]</code> attribute, not the Python name. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li>Fix panic in <code>#[pyfunction]</code> generated code when a required argument following an <code>Option</code> was not provided.  <a href="https://github.com/PyO3/pyo3/pull/2093">#2093</a></li>
 </ul>
 <h2 id="a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a class="header" href="#a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a href="https://github.com/pyo3/pyo3/compare/v0.15.0...v0.15.1">0.15.1</a> - 2021-11-19</a></h2>
 <h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>

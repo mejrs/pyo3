@@ -341,7 +341,10 @@ impl NoContains {
 <li><code>__rpow__(&lt;self&gt;, object, object) -&gt; object</code></li>
 </ul>
 <h4 id="buffer-objects"><a class="header" href="#buffer-objects">Buffer objects</a></h4>
-<p>TODO; see <a href="https://github.com/PyO3/pyo3/issues/1884">#1884</a></p>
+<ul>
+<li><code>__getbuffer__(&lt;self&gt;, *mut ffi::Py_buffer, flags) -&gt; ()</code></li>
+<li><code>__releasebuffer__(&lt;self&gt;, *mut ffi::Py_buffer)</code> (no return value, not even <code>PyResult</code>)</li>
+</ul>
 <h4 id="garbage-collector-integration"><a class="header" href="#garbage-collector-integration">Garbage Collector Integration</a></h4>
 <p>TODO; see <a href="https://github.com/PyO3/pyo3/issues/1884">#1884</a></p>
 <h3 id="pyproto-traits"><a class="header" href="#pyproto-traits"><code>#[pyproto]</code> traits</a></h3>
@@ -443,7 +446,8 @@ signature, or raise a TypeError.</p>
 <li><code>fn __itruediv__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
 <li><code>fn __ifloordiv__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
 <li><code>fn __imod__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
-<li><code>fn __ipow__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
+<li><code>fn __ipow__(&amp;'p mut self, other: impl FromPyObject, modulo: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code> on Python 3.8^</li>
+<li><code>fn __ipow__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code> on Python 3.7 see https://bugs.python.org/issue36379</li>
 <li><code>fn __ilshift__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
 <li><code>fn __irshift__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
 <li><code>fn __iand__(&amp;'p mut self, other: impl FromPyObject) -&gt; PyResult&lt;()&gt;</code></li>
