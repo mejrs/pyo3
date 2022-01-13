@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IPowModulo","Python 3.8 and up - ipow has modulo argument correctly populated."]],"type":[["ipowfunc","Helper to use as pymethod ffi definition"]]});

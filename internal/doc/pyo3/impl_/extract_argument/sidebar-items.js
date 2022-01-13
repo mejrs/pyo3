@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["argument_extraction_error","Adds the argument name to the error message of an error which occurred during argument extraction."],["extract_argument",""],["push_parameter_list",""]],"struct":[["FunctionDescription","Function argument specification for a `#[pyfunction]` or `#[pymethod]`."],["KeywordOnlyParameterDescription",""]]});
