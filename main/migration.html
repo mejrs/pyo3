@@ -147,8 +147,30 @@
 <p>This guide can help you upgrade code through breaking changes from one PyO3 version to the next.
 For a detailed list of all changes, see the <a href="changelog.html">CHANGELOG</a>.</p>
 <h2 id="from-015-to-016"><a class="header" href="#from-015-to-016">from 0.15.* to 0.16</a></h2>
-<h3 id="drop-support-for-older-technogies"><a class="header" href="#drop-support-for-older-technogies">Drop support for older technogies</a></h3>
+<h3 id="drop-support-for-older-technologies"><a class="header" href="#drop-support-for-older-technologies">Drop support for older technologies</a></h3>
 <p>PyO3 0.16 has increased minimum Rust version to 1.48 and minimum Python version to 3.7. This enables ore use of newer language features (enabling some of the other additions in 0.16) and simplifies maintenance of the project.</p>
+<h3 id="container-magic-methods-now-match-python-behavior"><a class="header" href="#container-magic-methods-now-match-python-behavior">Container magic methods now match Python behavior</a></h3>
+<p>In PyO3 0.15, <code>__getitem__</code>, <code>__setitem__</code> and <code>__delitem__</code> in <code>#[pymethods]</code> would generate only the <em>mapping</em> implementation for a <code>#[pyclass]</code>. To match the Python behavior, these methods now generate both the <em>mapping</em> <strong>and</strong> <em>sequence</em> implementations.</p>
+<p>This means that classes implementing these <code>#[pymethods]</code> will now also be treated as sequences, same as a Python <code>class</code> would be. Small differences in behavior may result:</p>
+<ul>
+<li>PyO3 will allow instances of these classes to be cast to <code>PySequence</code> as well as <code>PyMapping</code>.</li>
+<li>Python will provide a default implementation of <code>__iter__</code> (if the class did not have one) which repeatedly calls <code>__getitem__</code> with integers (starting at 0) until an <code>IndexError</code> is raised.</li>
+</ul>
+<p>To explain this in detail, consider the following Python class:</p>
+<pre><code class="language-python">class ExampleContainer:
+
+    def __len__(self):
+        return 5
+
+    def __getitem__(self, idx: int) -&gt; int:
+        if idx &lt; 0 or idx &gt; 5:
+            raise IndexError()
+        return idx
+</code></pre>
+<p>This class implements a Python <a href="https://docs.python.org/3/glossary.html#term-sequence">sequence</a>.</p>
+<p>The <code>__len__</code> and <code>__getitem__</code> methods are also used to implement a Python <a href="https://docs.python.org/3/glossary.html#term-mapping">mapping</a>. In the Python C-API, these methods are not shared: the sequence <code>__len__</code> and <code>__getitem__</code> are defined by the <code>sq_len</code> and <code>sq_item</code> slots, and the mapping equivalents are <code>mp_len</code> and <code>mp_subscript</code>. There are similar distinctions for <code>__setitem__</code> and <code>__delitem__</code>.</p>
+<p>Because there is no such distinction from Python, implementing these methods will fill the mapping and sequence slots simultaneously. A Python class with <code>__len__</code> implemented, for example, will have both the <code>sq_len</code> and <code>mp_len</code> slots filled.</p>
+<p>The PyO3 behavior in 0.16 has been changed to be closer to this Python behavior by default.</p>
 <h2 id="from-014-to-015"><a class="header" href="#from-014-to-015">from 0.14.* to 0.15</a></h2>
 <h3 id="changes-in-sequence-indexing"><a class="header" href="#changes-in-sequence-indexing">Changes in sequence indexing</a></h3>
 <p>For all types that take sequence indices (<code>PyList</code>, <code>PyTuple</code> and <code>PySequence</code>),

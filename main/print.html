@@ -277,7 +277,7 @@ fn main() -&gt; PyResult&lt;()&gt; {
 about this topic.</p>
 <h2 id="tools-and-libraries"><a class="header" href="#tools-and-libraries">Tools and libraries</a></h2>
 <ul>
-<li><a href="https://github.com/PyO3/maturin">maturin</a> <em>Zero configuration build tool for Rust-made Python extensions</em>.</li>
+<li><a href="https://github.com/PyO3/maturin">maturin</a> <em>Build and publish crates with pyo3, rust-cpython or cffi bindings as well as rust binaries as python packages</em></li>
 <li><a href="https://github.com/PyO3/setuptools-rust">setuptools-rust</a> <em>Setuptools plugin for Rust support</em>.</li>
 <li><a href="https://github.com/PyO3/pyo3-built">pyo3-built</a> <em>Simple macro to expose metadata obtained with the <a href="https://crates.io/crates/built"><code>built</code></a> crate as a <a href="https://docs.rs/pyo3/*/pyo3/types/struct.PyDict.html"><code>PyDict</code></a></em></li>
 <li><a href="https://github.com/PyO3/rust-numpy">rust-numpy</a> <em>Rust binding of NumPy C-API</em></li>
@@ -316,6 +316,11 @@ about this topic.</p>
 <li><a href="https://github.com/fastlmm/bed-reader">bed-reader</a> <em>Read and write the PLINK BED format, simply and efficiently</em>
 <ul>
 <li>Shows Rayon/ndarray::parallel (including capturing errors, controlling thread num), Python types to Rust generics, Github Actions</li>
+</ul>
+</li>
+<li><a href="https://github.com/kevinheavey/pyheck">pyheck</a> <em>Fast case conversion library, built by wrapping <a href="https://github.com/withoutboats/heck">heck</a></em>
+<ul>
+<li>Quite easy to follow as there's not much code.</li>
 </ul>
 </li>
 </ul>
@@ -807,7 +812,7 @@ fn my_extension(py: Python, m: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
 </span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="python-classes"><a class="header" href="#python-classes">Python Classes</a></h1>
 <p>PyO3 exposes a group of attributes powered by Rust's proc macro system for defining Python classes as Rust structs.</p>
-<p>The main attribute is <code>#[pyclass]</code>, which is placed upon a Rust <code>struct</code> to generate a Python type for it. A struct will usually also have <em>one</em> <code>#[pymethods]</code>-annotated <code>impl</code> block for the struct, which is used to define Python methods and constants for the generated Python type. (If the <a href="features.html#multiple-pymethods"><code>multiple-pymethods</code></a> feature is enabled each <code>#[pyclass]</code> is allowed to have multiple <code>#[pymethods]</code> blocks.) Finally, there may be multiple <code>#[pyproto]</code> trait implementations for the struct, which are used to define certain python magic methods such as <code>__str__</code>.</p>
+<p>The main attribute is <code>#[pyclass]</code>, which is placed upon a Rust <code>struct</code> or a fieldless <code>enum</code> (a.k.a. C-like enum) to generate a Python type for it. They will usually also have <em>one</em> <code>#[pymethods]</code>-annotated <code>impl</code> block for the struct, which is used to define Python methods and constants for the generated Python type. (If the <a href="features.html#multiple-pymethods"><code>multiple-pymethods</code></a> feature is enabled each <code>#[pyclass]</code> is allowed to have multiple <code>#[pymethods]</code> blocks.) Finally, there may be multiple <code>#[pyproto]</code> trait implementations for the struct, which are used to define certain python magic methods such as <code>__str__</code>.</p>
 <p>This chapter will discuss the functionality and configuration these attributes offer. Below is a list of links to the relevant section of this chapter for each:</p>
 <ul>
 <li><a href="class.html#defining-a-new-class"><code>#[pyclass]</code></a>
@@ -829,8 +834,7 @@ fn my_extension(py: Python, m: &amp;PyModule) -&gt; PyResult&lt;()&gt; {
 <li><a href="class/protocols.html"><code>#[pyproto]</code></a></li>
 </ul>
 <h2 id="defining-a-new-class"><a class="header" href="#defining-a-new-class">Defining a new class</a></h2>
-<p>To define a custom Python class, a Rust struct needs to be annotated with the
-<code>#[pyclass]</code> attribute.</p>
+<p>To define a custom Python class, add the <code>#[pyclass]</code> attribute to a Rust struct or a fieldless enum.</p>
 <pre><pre class="playground"><code class="language-rust">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -841,10 +845,16 @@ struct MyClass {
 <span class="boring">    #[pyo3(get)]
 </span>    num: i32,
 }
+
+#[pyclass]
+enum MyEnum {
+    Variant,
+    OtherVariant = 30, // PyO3 supports custom discriminants.
+}
 <span class="boring">}
 </span></code></pre></pre>
-<p>Because Python objects are freely shared between threads by the Python interpreter, all structs annotated with <code>#[pyclass]</code> must implement <code>Send</code> (unless annotated with <a href="class.html#customizing-the-class"><code>#[pyclass(unsendable)]</code></a>).</p>
-<p>The above example generates implementations for <a href="https://pyo3.rs/main/doc/pyo3/type_object/trait.PyTypeInfo.html"><code>PyTypeInfo</code></a>, <a href="https://pyo3.rs/main/doc/pyo3/type_object/trait.PyTypeObject.html"><code>PyTypeObject</code></a>, and <a href="https://pyo3.rs/main/doc/pyo3/pyclass/trait.PyClass.html"><code>PyClass</code></a> for <code>MyClass</code>. To see these generated implementations, refer to the <a href="class.html#implementation-details">implementation details</a> at the end of this chapter.</p>
+<p>Because Python objects are freely shared between threads by the Python interpreter, all types annotated with <code>#[pyclass]</code> must implement <code>Send</code> (unless annotated with <a href="class.html#customizing-the-class"><code>#[pyclass(unsendable)]</code></a>).</p>
+<p>The above example generates implementations for <a href="https://pyo3.rs/main/doc/pyo3/type_object/trait.PyTypeInfo.html"><code>PyTypeInfo</code></a>, <a href="https://pyo3.rs/main/doc/pyo3/type_object/trait.PyTypeObject.html"><code>PyTypeObject</code></a>, and <a href="https://pyo3.rs/main/doc/pyo3/pyclass/trait.PyClass.html"><code>PyClass</code></a> for <code>MyClass</code> and <code>MyEnum</code>. To see these generated implementations, refer to the <a href="class.html#implementation-details">implementation details</a> at the end of this chapter.</p>
 <h2 id="adding-the-class-to-a-module"><a class="header" href="#adding-the-class-to-a-module">Adding the class to a module</a></h2>
 <p>Custom Python classes can then be added to a module using <code>add_class()</code>.</p>
 <pre><pre class="playground"><code class="language-rust">
@@ -945,8 +955,8 @@ so that they can benefit from a freelist. <code>XXX</code> is a number of items 
 <li><code>gc</code> - Classes with the <code>gc</code> parameter participate in Python garbage collection.
 If a custom class contains references to other Python objects that can be collected, the <a href="https://pyo3.rs/main/doc/pyo3/class/gc/trait.PyGCProtocol.html"><code>PyGCProtocol</code></a> trait has to be implemented.</li>
 <li><code>weakref</code> - Adds support for Python weak references.</li>
-<li><code>extends=BaseType</code> - Use a custom base class. The base <code>BaseType</code> must implement <code>PyTypeInfo</code>.</li>
-<li><code>subclass</code> - Allows Python classes to inherit from this class.</li>
+<li><code>extends=BaseType</code> - Use a custom base class. The base <code>BaseType</code> must implement <code>PyTypeInfo</code>. <code>enum</code> pyclasses can't use a custom base class.</li>
+<li><code>subclass</code> - Allows Python classes to inherit from this class. <code>enum</code> pyclasses can't be inherited from.</li>
 <li><code>dict</code> - Adds <code>__dict__</code> support, so that the instances of this type have a dictionary containing arbitrary instance variables.</li>
 <li><code>unsendable</code> - Making it safe to expose <code>!Send</code> structs to Python, where all object can be accessed
 by multiple threads. A class marked with <code>unsendable</code> panics when accessed by another thread.</li>
@@ -1152,7 +1162,7 @@ impl SubClass {
 <h2 id="object-properties"><a class="header" href="#object-properties">Object properties</a></h2>
 <p>PyO3 supports two ways to add properties to your <code>#[pyclass]</code>:</p>
 <ul>
-<li>For simple fields with no side effects, a <code>#[pyo3(get, set)]</code> attribute can be added directly to the field definition in the <code>#[pyclass]</code>.</li>
+<li>For simple struct fields with no side effects, a <code>#[pyo3(get, set)]</code> attribute can be added directly to the field definition in the <code>#[pyclass]</code>.</li>
 <li>For properties which require computation you can define <code>#[getter]</code> and <code>#[setter]</code> functions in the <a href="class.html#instance-methods"><code>#[pymethods]</code></a> block.</li>
 </ul>
 <p>We'll cover each of these in the following sections.</p>
@@ -1588,6 +1598,123 @@ impl MyClass {
 </span></code></pre></pre>
 <p>Note that <code>text_signature</code> on classes is not compatible with compilation in
 <code>abi3</code> mode until Python 3.10 or greater.</p>
+<h2 id="pyclass-enums"><a class="header" href="#pyclass-enums">#[pyclass] enums</a></h2>
+<p>Currently PyO3 only supports fieldless enums. PyO3 adds a class attribute for each variant, so you can access them in Python without defining <code>#[new]</code>. PyO3 also provides default implementations of <code>__richcmp__</code> and <code>__int__</code>, so they can be compared using <code>==</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>#[pyclass]
+enum MyEnum {
+    Variant,
+    OtherVariant,
+}
+
+Python::with_gil(|py| {
+    let x = Py::new(py, MyEnum::Variant).unwrap();
+    let y = Py::new(py, MyEnum::OtherVariant).unwrap();
+    let cls = py.get_type::&lt;MyEnum&gt;();
+    pyo3::py_run!(py, x y cls, r#&quot;
+        assert x == cls.Variant
+        assert y == cls.OtherVariant
+        assert x != y
+    &quot;#)
+})
+<span class="boring">}
+</span></code></pre></pre>
+<p>You can also convert your enums into <code>int</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>#[pyclass]
+enum MyEnum {
+    Variant,
+    OtherVariant = 10,
+}
+
+Python::with_gil(|py| {
+    let cls = py.get_type::&lt;MyEnum&gt;();
+    let x = MyEnum::Variant as i32; // The exact value is assigned by the compiler.
+    pyo3::py_run!(py, cls x, r#&quot;
+        assert int(cls.Variant) == x
+        assert int(cls.OtherVariant) == 10
+        assert cls.OtherVariant == 10  # You can also compare against int.
+        assert 10 == cls.OtherVariant
+    &quot;#)
+})
+<span class="boring">}
+</span></code></pre></pre>
+<p>PyO3 also provides <code>__repr__</code> for enums:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>#[pyclass]
+enum MyEnum{
+    Variant,
+    OtherVariant,
+}
+
+Python::with_gil(|py| {
+    let cls = py.get_type::&lt;MyEnum&gt;();
+    let x = Py::new(py, MyEnum::Variant).unwrap();
+    pyo3::py_run!(py, cls x, r#&quot;
+        assert repr(x) == 'MyEnum.Variant'
+        assert repr(cls.OtherVariant) == 'MyEnum.OtherVariant'
+    &quot;#)
+})
+<span class="boring">}
+</span></code></pre></pre>
+<p>All methods defined by PyO3 can be overriden. For example here's how you override <code>__repr__</code>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>#[pyclass]
+enum MyEnum {
+    Answer = 42,
+}
+
+#[pymethods]
+impl MyEnum {
+    fn __repr__(&amp;self) -&gt; &amp;'static str {
+        &quot;42&quot;
+    }
+}
+
+Python::with_gil(|py| {
+    let cls = py.get_type::&lt;MyEnum&gt;();
+    pyo3::py_run!(py, cls, &quot;assert repr(cls.Answer) == '42'&quot;)
+})
+<span class="boring">}
+</span></code></pre></pre>
+<p>You may not use enums as a base class or let enums inherit from other classes.</p>
+<pre><pre class="playground"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>#[pyclass(subclass)]
+enum BadBase{
+    Var1,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<pre><pre class="playground"><code class="language-rust compile_fail">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span><span class="boring">use pyo3::prelude::*;
+</span>
+#[pyclass(subclass)]
+struct Base;
+
+#[pyclass(extends=Base)]
+enum BadSubclass{
+    Var1,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p><code>#[pyclass]</code> enums are currently not interoperable with <code>IntEnum</code> in Python.</p>
 <h2 id="implementation-details"><a class="header" href="#implementation-details">Implementation details</a></h2>
 <p>The <code>#[pyclass]</code> macros rely on a lot of conditional code generation: each <code>#[pyclass]</code> can optionally have a <code>#[pymethods]</code> block as well as several different possible <code>#[pyproto]</code> trait implementations.</p>
 <p>To support this flexibility the <code>#[pyclass]</code> macro expands to a blob of boilerplate code which sets up the structure for <a href="https://github.com/dtolnay/case-studies/blob/master/autoref-specialization/README.md">&quot;dtolnay specialization&quot;</a>. This implementation pattern enables the Rust compiler to use <code>#[pymethods]</code> and <code>#[pyproto]</code> implementations when they are present, and fall back to default (empty) definitions when they are not.</p>
@@ -1632,55 +1759,21 @@ impl pyo3::IntoPy&lt;PyObject&gt; for MyClass {
     }
 }
 
-impl pyo3::class::impl_::PyClassImpl for MyClass {
+impl pyo3::impl_::pyclass::PyClassImpl for MyClass {
     const DOC: &amp;'static str = &quot;Class for demonstration\u{0}&quot;;
     const IS_GC: bool = false;
     const IS_BASETYPE: bool = false;
     const IS_SUBCLASS: bool = false;
     type Layout = PyCell&lt;MyClass&gt;;
     type BaseType = PyAny;
-    type ThreadChecker = pyo3::class::impl_::ThreadCheckerStub&lt;MyClass&gt;;
+    type ThreadChecker = pyo3::impl_::pyclass::ThreadCheckerStub&lt;MyClass&gt;;
 
-    fn for_each_method_def(visitor: &amp;mut dyn FnMut(&amp;[pyo3::class::PyMethodDefType])) {
-        use pyo3::class::impl_::*;
+    fn for_all_items(visitor: &amp;mut dyn FnMut(&amp;pyo3::impl_::pyclass::PyClassItems)) {
+        use pyo3::impl_::pyclass::*;
         let collector = PyClassImplCollector::&lt;MyClass&gt;::new();
+        static INTRINSIC_ITEMS: PyClassItems = PyClassItems { slots: &amp;[], methods: &amp;[] };
+        visitor(&amp;INTRINSIC_ITEMS);
         visitor(collector.py_methods());
-        visitor(collector.py_class_descriptors());
-        visitor(collector.object_protocol_methods());
-        visitor(collector.async_protocol_methods());
-        visitor(collector.descr_protocol_methods());
-        visitor(collector.mapping_protocol_methods());
-        visitor(collector.number_protocol_methods());
-    }
-    fn get_new() -&gt; Option&lt;pyo3::ffi::newfunc&gt; {
-        use pyo3::class::impl_::*;
-        let collector = PyClassImplCollector::&lt;Self&gt;::new();
-        collector.new_impl()
-    }
-    fn get_alloc() -&gt; Option&lt;pyo3::ffi::allocfunc&gt; {
-        use pyo3::class::impl_::*;
-        let collector = PyClassImplCollector::&lt;Self&gt;::new();
-        collector.alloc_impl()
-    }
-    fn get_free() -&gt; Option&lt;pyo3::ffi::freefunc&gt; {
-        use pyo3::class::impl_::*;
-        let collector = PyClassImplCollector::&lt;Self&gt;::new();
-        collector.free_impl()
-    }
-    fn for_each_proto_slot(visitor: &amp;mut dyn FnMut(&amp;[pyo3::ffi::PyType_Slot])) {
-        // Implementation which uses dtolnay specialization to load all slots.
-        use pyo3::class::impl_::*;
-        let collector = PyClassImplCollector::&lt;Self&gt;::new();
-        visitor(collector.object_protocol_slots());
-        visitor(collector.number_protocol_slots());
-        visitor(collector.iter_protocol_slots());
-        visitor(collector.gc_protocol_slots());
-        visitor(collector.descr_protocol_slots());
-        visitor(collector.mapping_protocol_slots());
-        visitor(collector.sequence_protocol_slots());
-        visitor(collector.async_protocol_slots());
-        visitor(collector.buffer_protocol_slots());
-        visitor(collector.methods_protocol_slots());
     }
 }
 <span class="boring">Python::with_gil(|py| {
@@ -1705,7 +1798,6 @@ impl pyo3::class::impl_::PyClassImpl for MyClass {
 <ul>
 <li>Magic methods for garbage collection</li>
 <li>Magic methods for the buffer protocol</li>
-<li>Magic methods for the sequence protocol</li>
 </ul>
 <p>When PyO3 handles a magic method, a couple of changes apply compared to other <code>#[pymethods]</code>:</p>
 <ul>
@@ -1791,9 +1883,7 @@ as for normal <code>pymethods</code></p>
 <li><code>__aiter__(&lt;self&gt;) -&gt; object</code></li>
 <li><code>__anext__(&lt;self&gt;) -&gt; Option&lt;object&gt; or IterANextOutput</code></li>
 </ul>
-<h4 id="sequence-types"><a class="header" href="#sequence-types">Sequence types</a></h4>
-<p>TODO; see <a href="https://github.com/PyO3/pyo3/issues/1884">#1884</a></p>
-<h4 id="mapping-types"><a class="header" href="#mapping-types">Mapping types</a></h4>
+<h4 id="mapping--sequence-types"><a class="header" href="#mapping--sequence-types">Mapping &amp; Sequence types</a></h4>
 <ul>
 <li>
 <p><code>__len__(&lt;self&gt;) -&gt; usize</code></p>
@@ -3304,6 +3394,8 @@ assert userdata.as_tuple() == userdata_as_tuple
 <p><a href="https://pyo3.rs/main/doc/pyo3/types/struct.PyModule.html#method.from_code">PyModule::from_code</a>
 can be used to generate a Python module which can then be used just as if it was imported with
 <code>PyModule::import</code>.</p>
+<p><strong>Warning</strong>: This will compile and execute code. <strong>Never</strong> pass untrusted code
+to this function!</p>
 <pre><pre class="playground"><code class="language-rust">use pyo3::{prelude::*, types::{IntoPyDict, PyModule}};
 
 <span class="boring">fn main() -&gt; PyResult&lt;()&gt; {
@@ -3329,6 +3421,91 @@ def leaky_relu(x, slope=0.01):
 </span>})
 <span class="boring">}
 </span></code></pre></pre>
+<h3 id="include-multiple-python-files"><a class="header" href="#include-multiple-python-files">Include multiple Python files</a></h3>
+<p>You can include a file at compile time by using
+<a href="https://doc.rust-lang.org/std/macro.include_str.html"><code>std::include_str</code></a> macro.</p>
+<p>Or you can load a file at runtime by using
+<a href="https://doc.rust-lang.org/std/fs/fn.read_to_string.html"><code>std::fs::read_to_string</code></a> function.</p>
+<p>Many Python files can be included and loaded as modules. If one file depends on
+another you must preserve correct order while declaring <code>PyModule</code>.</p>
+<p>Example directory structure:</p>
+<pre><code class="language-text">.
+├── Cargo.lock
+├── Cargo.toml
+├── python_app
+│   ├── app.py
+│   └── utils
+│       └── foo.py
+└── src
+    └── main.rs
+</code></pre>
+<p><code>python_app/app.py</code>:</p>
+<pre><code class="language-python">from utils.foo import bar
+
+
+def run():
+    return bar()
+</code></pre>
+<p><code>python_app/utils/foo.py</code>:</p>
+<pre><code class="language-python">def bar():
+    return &quot;baz&quot;
+</code></pre>
+<p>The example below shows:</p>
+<ul>
+<li>how to include content of <code>app.py</code> and <code>utils/foo.py</code> into your rust binary</li>
+<li>how to call function <code>run()</code> (declared in <code>app.py</code>) that needs function
+imported from <code>utils/foo.py</code></li>
+</ul>
+<p><code>src/main.rs</code>:</p>
+<pre><code class="language-ignore">use pyo3::prelude::*;
+
+fn main() -&gt; PyResult&lt;()&gt; {
+    let py_foo = include_str!(concat!(env!(&quot;CARGO_MANIFEST_DIR&quot;), &quot;/python_app/utils/foo.py&quot;));
+    let py_app = include_str!(concat!(env!(&quot;CARGO_MANIFEST_DIR&quot;), &quot;/python_app/app.py&quot;));
+    let from_python = Python::with_gil(|py| -&gt; PyResult&lt;Py&lt;PyAny&gt;&gt; {
+        PyModule::from_code(py, py_foo, &quot;utils.foo&quot;, &quot;utils.foo&quot;)?;
+        let app: Py&lt;PyAny&gt; = PyModule::from_code(py, py_app, &quot;&quot;, &quot;&quot;)?
+            .getattr(&quot;run&quot;)?
+            .into();
+        app.call0(py)
+    });
+
+    println!(&quot;py: {}&quot;, from_python?);
+    Ok(())
+}
+</code></pre>
+<p>The example below shows:</p>
+<ul>
+<li>how to load content of <code>app.py</code> at runtime so that it sees its dependencies
+automatically</li>
+<li>how to call function <code>run()</code> (declared in <code>app.py</code>) that needs function
+imported from <code>utils/foo.py</code></li>
+</ul>
+<p>It is recommended to use absolute paths because then your binary can be run
+from anywhere as long as your <code>app.py</code> is in the expected directory (in this example
+that directory is <code>/usr/share/python_app</code>).</p>
+<p><code>src/main.rs</code>:</p>
+<pre><code class="language-ignore">use pyo3::prelude::*;
+use pyo3::types::PyList;
+use std::fs;
+use std::path::Path;
+
+fn main() -&gt; PyResult&lt;()&gt; {
+    let path = Path::new(&quot;/usr/share/python_app&quot;);
+    let py_app = fs::read_to_string(path.join(&quot;app.py&quot;))?;
+    let from_python = Python::with_gil(|py| -&gt; PyResult&lt;Py&lt;PyAny&gt;&gt; {
+        let syspath: &amp;PyList = py.import(&quot;sys&quot;)?.getattr(&quot;path&quot;)?.downcast::&lt;PyList&gt;()?;
+        syspath.insert(0, &amp;path)?;
+        let app: Py&lt;PyAny&gt; = PyModule::from_code(py, &amp;py_app, &quot;&quot;, &quot;&quot;)?
+            .getattr(&quot;run&quot;)?
+            .into();
+        app.call0(py)
+    });
+
+    println!(&quot;py: {}&quot;, from_python?);
+    Ok(())
+}
+</code></pre>
 <h2 id="need-to-use-a-context-manager-from-rust"><a class="header" href="#need-to-use-a-context-manager-from-rust">Need to use a context manager from Rust?</a></h2>
 <p>Use context managers by directly invoking <code>__enter__</code> and <code>__exit__</code>.</p>
 <pre><pre class="playground"><code class="language-rust">use pyo3::prelude::*;
@@ -3680,7 +3857,7 @@ result_2 = future_2.result()
 <li>Rust sequential version</li>
 <li>Rust sequential version executed twice with two Python threads</li>
 </ol>
-<p>The benchmark script can be found <a href="https://github.com/PyO3/pyo3/blob/main/examples/word-count/tests/test_word_count.py">here</a>, and we can run <code>tox</code> in the <code>word-count</code> folder to benchmark these functions.</p>
+<p>The benchmark script can be found <a href="https://github.com/PyO3/pyo3/blob/main/examples/word-count/tests/test_word_count.py">here</a>, and we can run <code>nox</code> in the <code>word-count</code> folder to benchmark these functions.</p>
 <p>While the results of the benchmark of course depend on your machine, the relative results should be similar to this (mid 2020):</p>
 <pre><code class="language-ignore">-------------------------------------------------------------------------------------------------- benchmark: 4 tests -------------------------------------------------------------------------------------------------
 Name (time in ms)                                          Min                Max               Mean            StdDev             Median               IQR            Outliers       OPS            Rounds  Iterations
@@ -3756,6 +3933,11 @@ test_word_count_python_sequential                      27.3985 (15.82)    45.452
 <p>This feature enables a dependency on <code>inventory</code>, which enables each <code>#[pyclass]</code> to have more than one <code>#[pymethods]</code> block.</p>
 <p>Most users should only need a single <code>#[pymethods]</code> per <code>#[pyclass]</code>. In addition, not all platforms (e.g. Wasm) are supported by <code>inventory</code>. For this reason this feature is not enabled by default, meaning fewer dependencies and faster compilation for the majority of users.</p>
 <p>See <a href="class.html#implementation-details">the <code>#[pyclass]</code> implementation details</a> for more information.</p>
+<h3 id="pyproto"><a class="header" href="#pyproto"><code>pyproto</code></a></h3>
+<p>This feature enables the <code>#[pyproto]</code> macro, which is an alternative (older, soon-to-be-deprecated) to <code>#[pymethods]</code> for defining magic methods such as <code>__eq__</code>.</p>
+<blockquote>
+<p>This feature is enabled by default. To disable it, set <code>default-features = false</code> for the <code>pyo3</code> entry in your Cargo.toml.</p>
+</blockquote>
 <h3 id="nightly"><a class="header" href="#nightly"><code>nightly</code></a></h3>
 <p>The <code>nightly</code> feature needs the nightly Rust compiler. This allows PyO3 to use Rust's unstable specialization feature to apply the following optimizations:</p>
 <ul>
@@ -4120,7 +4302,7 @@ not work when compiling for <code>abi3</code>. These are:</p>
 <ul>
 <li><code>#[pyo3(text_signature = &quot;...&quot;)]</code> does not work on classes until Python 3.10 or greater.</li>
 <li>The <code>dict</code> and <code>weakref</code> options on classes are not supported until Python 3.9 or greater.</li>
-<li>The buffer API is not supported.</li>
+<li>The buffer API is not supported until Python 3.11 or greater.</li>
 <li>Optimizations which rely on knowledge of the exact Python version compiled against.</li>
 </ul>
 <h2 id="embedding-python-in-rust"><a class="header" href="#embedding-python-in-rust">Embedding Python in Rust</a></h2>
@@ -4937,8 +5119,30 @@ struct MyClass;
 <p>This guide can help you upgrade code through breaking changes from one PyO3 version to the next.
 For a detailed list of all changes, see the <a href="changelog.html">CHANGELOG</a>.</p>
 <h2 id="from-015-to-016"><a class="header" href="#from-015-to-016">from 0.15.* to 0.16</a></h2>
-<h3 id="drop-support-for-older-technogies"><a class="header" href="#drop-support-for-older-technogies">Drop support for older technogies</a></h3>
+<h3 id="drop-support-for-older-technologies"><a class="header" href="#drop-support-for-older-technologies">Drop support for older technologies</a></h3>
 <p>PyO3 0.16 has increased minimum Rust version to 1.48 and minimum Python version to 3.7. This enables ore use of newer language features (enabling some of the other additions in 0.16) and simplifies maintenance of the project.</p>
+<h3 id="container-magic-methods-now-match-python-behavior"><a class="header" href="#container-magic-methods-now-match-python-behavior">Container magic methods now match Python behavior</a></h3>
+<p>In PyO3 0.15, <code>__getitem__</code>, <code>__setitem__</code> and <code>__delitem__</code> in <code>#[pymethods]</code> would generate only the <em>mapping</em> implementation for a <code>#[pyclass]</code>. To match the Python behavior, these methods now generate both the <em>mapping</em> <strong>and</strong> <em>sequence</em> implementations.</p>
+<p>This means that classes implementing these <code>#[pymethods]</code> will now also be treated as sequences, same as a Python <code>class</code> would be. Small differences in behavior may result:</p>
+<ul>
+<li>PyO3 will allow instances of these classes to be cast to <code>PySequence</code> as well as <code>PyMapping</code>.</li>
+<li>Python will provide a default implementation of <code>__iter__</code> (if the class did not have one) which repeatedly calls <code>__getitem__</code> with integers (starting at 0) until an <code>IndexError</code> is raised.</li>
+</ul>
+<p>To explain this in detail, consider the following Python class:</p>
+<pre><code class="language-python">class ExampleContainer:
+
+    def __len__(self):
+        return 5
+
+    def __getitem__(self, idx: int) -&gt; int:
+        if idx &lt; 0 or idx &gt; 5:
+            raise IndexError()
+        return idx
+</code></pre>
+<p>This class implements a Python <a href="https://docs.python.org/3/glossary.html#term-sequence">sequence</a>.</p>
+<p>The <code>__len__</code> and <code>__getitem__</code> methods are also used to implement a Python <a href="https://docs.python.org/3/glossary.html#term-mapping">mapping</a>. In the Python C-API, these methods are not shared: the sequence <code>__len__</code> and <code>__getitem__</code> are defined by the <code>sq_len</code> and <code>sq_item</code> slots, and the mapping equivalents are <code>mp_len</code> and <code>mp_subscript</code>. There are similar distinctions for <code>__setitem__</code> and <code>__delitem__</code>.</p>
+<p>Because there is no such distinction from Python, implementing these methods will fill the mapping and sequence slots simultaneously. A Python class with <code>__len__</code> implemented, for example, will have both the <code>sq_len</code> and <code>mp_len</code> slots filled.</p>
+<p>The PyO3 behavior in 0.16 has been changed to be closer to this Python behavior by default.</p>
 <h2 id="from-014-to-015"><a class="header" href="#from-014-to-015">from 0.14.* to 0.15</a></h2>
 <h3 id="changes-in-sequence-indexing"><a class="header" href="#changes-in-sequence-indexing">Changes in sequence indexing</a></h3>
 <p>For all types that take sequence indices (<code>PyList</code>, <code>PyTuple</code> and <code>PySequence</code>),
@@ -5431,7 +5635,7 @@ let obj_ref_mut: PyRefMut&lt;MyClass&gt; = obj.extract().unwrap();
 <span class="boring">})
 </span><span class="boring">}
 </span></code></pre></pre>
-<h4 id="pyproto"><a class="header" href="#pyproto"><code>#[pyproto]</code></a></h4>
+<h4 id="pyproto-1"><a class="header" href="#pyproto-1"><code>#[pyproto]</code></a></h4>
 <p>Most of the arguments to methods in <code>#[pyproto]</code> impls require a
 <a href="https://pyo3.rs/main/doc/pyo3/conversion/trait.FromPyObject.html"><code>FromPyObject</code></a> implementation.
 So if your protocol methods take <code>&amp;T</code> or <code>&amp;mut T</code> (where <code>T: PyClass</code>),
@@ -6194,18 +6398,21 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><code>pyo3-build-config</code> no longer enables the <code>resolve-config</code> feature by default. <a href="https://github.com/PyO3/pyo3/pull/2008">#2008</a></li>
 <li>Update <code>inventory</code> optional dependency to 0.2. <a href="https://github.com/PyO3/pyo3/pull/2019">#2019</a></li>
 <li>Drop <code>paste</code> dependency. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li>The bindings found <code>pyo3::ffi</code> are now a re-export of the new <code>pyo3-ffi</code> crate. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
 </ul>
 <h3 id="added"><a class="header" href="#added">Added</a></h3>
 <ul>
 <li>Add <code>Py::setattr</code> method. <a href="https://github.com/PyO3/pyo3/pull/2009">#2009</a></li>
 <li>Add <code>PyCapsule</code>, exposing the <a href="https://docs.python.org/3/c-api/capsule.html#capsules">Capsule API</a>. <a href="https://github.com/PyO3/pyo3/pull/1980">#1980</a></li>
-<li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies
-where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
 <li>Expose <code>pyo3-build-config</code> APIs for cross-compiling and Python configuration discovery for use in other projects. <a href="https://github.com/PyO3/pyo3/pull/1996">#1996</a></li>
+<li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
+<li>Enable <code>#[pyclass]</code> for fieldless (aka C-like) enums. <a href="https://github.com/PyO3/pyo3/pull/2034">#2034</a></li>
 <li>Add buffer magic methods <code>__getbuffer__</code> and <code>__releasebuffer__</code> to <code>#[pymethods]</code>. <a href="https://github.com/PyO3/pyo3/pull/2067">#2067</a></li>
 <li>Accept paths in <code>wrap_pyfunction</code> and <code>wrap_pymodule</code>. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
 <li>Add check for correct number of arguments on magic methods. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
 <li><code>wrap_pyfunction!</code> can now wrap a <code>#[pyfunction]</code> which is implemented in a different Rust module or crate. <a href="https://github.com/PyO3/pyo3/pull/2091">#2091</a></li>
+<li>Add <code>PyAny::contains</code> method (<code>in</code> operator for <code>PyAny</code>). <a href="https://github.com/PyO3/pyo3/pull/2115">#2115</a></li>
+<li>Add <code>PyMapping::contains</code> method (<code>in</code> operator for <code>PyMapping</code>). <a href="https://github.com/PyO3/pyo3/pull/2133">#2133</a></li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
@@ -6223,16 +6430,36 @@ where to find the <code>pyo3</code> crate, in case it has been renamed or is re-
 <li><code>PyErr::new_type</code> now takes an optional docstring and now returns <code>PyResult&lt;Py&lt;PyType&gt;&gt;</code> rather than a <code>ffi::PyTypeObject</code> pointer.</li>
 <li>The <code>create_exception!</code> macro can now take an optional docstring. This docstring, if supplied, is visible to users (with <code>.__doc__</code> and <code>help()</code>) and
 accompanies your error type in your crate's documentation.</li>
+<li><code>__getitem__</code>, <code>__setitem__</code> and <code>__delitem__</code> in <code>#[pymethods]</code> now implement both a Python mapping and sequence by default. <a href="https://github.com/PyO3/pyo3/pull/2065">#2065</a></li>
 <li>Improve performance and error messages for <code>#[derive(FromPyObject)]</code> for enums. <a href="https://github.com/PyO3/pyo3/pull/2068">#2068</a></li>
 <li>Reduce generated LLVM code size (to improve compile times) for:
 <ul>
-<li>internal <code>handle_panic</code> helper <a href="https://github.com/PyO3/pyo3/pull/2074">#2074</a></li>
+<li>internal <code>handle_panic</code> helper <a href="https://github.com/PyO3/pyo3/pull/2074">#2074</a> <a href="https://github.com/PyO3/pyo3/pull/2158">#2158</a></li>
 <li><code>#[pyfunction]</code> and <code>#[pymethods]</code> argument extraction <a href="https://github.com/PyO3/pyo3/pull/2075">#2075</a> <a href="https://github.com/PyO3/pyo3/pull/2085">#2085</a></li>
-<li><code>#[pyclass]</code> type object creation <a href="https://github.com/PyO3/pyo3/pull/2076">#2076</a> <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li><code>#[pyclass]</code> type object creation <a href="https://github.com/PyO3/pyo3/pull/2076">#2076</a> <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a> <a href="https://github.com/PyO3/pyo3/pull/2157">#2157</a></li>
 </ul>
 </li>
 <li><code>__ipow__</code> now supports modulo argument on Python 3.8+. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
 <li><code>pyo3-macros-backend</code> is now compiled with PyO3 cfgs to enable different magic method definitions based on version. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
+<li><code>_PyCFunctionFast</code> now correctly reflects the signature defined in the <a href="https://docs.python.org/3/c-api/structures.html#c._PyCFunctionFast">Python docs</a>. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
+<li><code>PyDateTimeAPI</code> and <code>PyDateTime_TimeZone_UTC</code> are are now unsafe functions instead of statics. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
+<li><code>PyDateTimeAPI</code> does not implicitly call <code>PyDateTime_IMPORT</code> anymore to reflect the original Python API more closely. Before the first call to <code>PyDateTime_IMPORT</code> a null pointer is returned. Therefore before calling any of the following FFI functions <code>PyDateTime_IMPORT</code> must be called to avoid undefined behaviour: <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a>
+<ul>
+<li><code>PyDateTime_TimeZone_UTC</code></li>
+<li><code>PyDate_Check</code></li>
+<li><code>PyDate_CheckExact</code></li>
+<li><code>PyDateTime_Check</code></li>
+<li><code>PyDateTime_CheckExact</code></li>
+<li><code>PyTime_Check</code></li>
+<li><code>PyTime_CheckExact</code></li>
+<li><code>PyDelta_Check</code></li>
+<li><code>PyDelta_CheckExact</code></li>
+<li><code>PyTZInfo_Check</code></li>
+<li><code>PyTZInfo_CheckExact</code></li>
+<li><code>PyDateTime_FromTimestamp</code></li>
+<li><code>PyDate_FromTimestamp</code></li>
+</ul>
+</li>
 </ul>
 <h3 id="removed"><a class="header" href="#removed">Removed</a></h3>
 <ul>
@@ -6246,6 +6473,9 @@ accompanies your error type in your crate's documentation.</li>
 <li>Fix undefined behavior in <code>PySlice::indices</code>. <a href="https://github.com/PyO3/pyo3/pull/2061">#2061</a></li>
 <li>Use the Rust function path for <code>wrap_pymodule!</code> of a <code>#[pymodule]</code> with a <code>#[pyo3(name = &quot;..&quot;)]</code> attribute, not the Python name. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
 <li>Fix panic in <code>#[pyfunction]</code> generated code when a required argument following an <code>Option</code> was not provided.  <a href="https://github.com/PyO3/pyo3/pull/2093">#2093</a></li>
+<li>Fixed undefined behaviour caused by incorrect <code>ExactSizeIterator</code> implementations. <a href="https://github.com/PyO3/pyo3/pull/2124">#2124</a></li>
+<li>Add missing FFI definitions <code>_PyLong_NumBits</code> and <code>_PyLong_AsByteArray</code> on PyPy. <a href="https://github.com/PyO3/pyo3/pull/2146">#2146</a></li>
+<li>Fix memory leak in implementation of <code>AsPyPointer</code> for <code>Option&lt;T&gt;</code>. <a href="https://github.com/PyO3/pyo3/pull/2160">#2160</a></li>
 </ul>
 <h2 id="a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a class="header" href="#a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a href="https://github.com/pyo3/pyo3/compare/v0.15.0...v0.15.1">0.15.1</a> - 2021-11-19</a></h2>
 <h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>

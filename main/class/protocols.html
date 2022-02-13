@@ -158,7 +158,6 @@
 <ul>
 <li>Magic methods for garbage collection</li>
 <li>Magic methods for the buffer protocol</li>
-<li>Magic methods for the sequence protocol</li>
 </ul>
 <p>When PyO3 handles a magic method, a couple of changes apply compared to other <code>#[pymethods]</code>:</p>
 <ul>
@@ -244,9 +243,7 @@ as for normal <code>pymethods</code></p>
 <li><code>__aiter__(&lt;self&gt;) -&gt; object</code></li>
 <li><code>__anext__(&lt;self&gt;) -&gt; Option&lt;object&gt; or IterANextOutput</code></li>
 </ul>
-<h4 id="sequence-types"><a class="header" href="#sequence-types">Sequence types</a></h4>
-<p>TODO; see <a href="https://github.com/PyO3/pyo3/issues/1884">#1884</a></p>
-<h4 id="mapping-types"><a class="header" href="#mapping-types">Mapping types</a></h4>
+<h4 id="mapping--sequence-types"><a class="header" href="#mapping--sequence-types">Mapping &amp; Sequence types</a></h4>
 <ul>
 <li>
 <p><code>__len__(&lt;self&gt;) -&gt; usize</code></p>

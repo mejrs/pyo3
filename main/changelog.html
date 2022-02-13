@@ -157,18 +157,21 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><code>pyo3-build-config</code> no longer enables the <code>resolve-config</code> feature by default. <a href="https://github.com/PyO3/pyo3/pull/2008">#2008</a></li>
 <li>Update <code>inventory</code> optional dependency to 0.2. <a href="https://github.com/PyO3/pyo3/pull/2019">#2019</a></li>
 <li>Drop <code>paste</code> dependency. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li>The bindings found <code>pyo3::ffi</code> are now a re-export of the new <code>pyo3-ffi</code> crate. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
 </ul>
 <h3 id="added"><a class="header" href="#added">Added</a></h3>
 <ul>
 <li>Add <code>Py::setattr</code> method. <a href="https://github.com/PyO3/pyo3/pull/2009">#2009</a></li>
 <li>Add <code>PyCapsule</code>, exposing the <a href="https://docs.python.org/3/c-api/capsule.html#capsules">Capsule API</a>. <a href="https://github.com/PyO3/pyo3/pull/1980">#1980</a></li>
-<li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies
-where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
 <li>Expose <code>pyo3-build-config</code> APIs for cross-compiling and Python configuration discovery for use in other projects. <a href="https://github.com/PyO3/pyo3/pull/1996">#1996</a></li>
+<li>All PyO3 proc-macros except the deprecated <code>#[pyproto]</code> now accept a supplemental attribute <code>#[pyo3(crate = &quot;some::path&quot;)]</code> that specifies where to find the <code>pyo3</code> crate, in case it has been renamed or is re-exported and not found at the crate root. <a href="https://github.com/PyO3/pyo3/pull/2022">#2022</a></li>
+<li>Enable <code>#[pyclass]</code> for fieldless (aka C-like) enums. <a href="https://github.com/PyO3/pyo3/pull/2034">#2034</a></li>
 <li>Add buffer magic methods <code>__getbuffer__</code> and <code>__releasebuffer__</code> to <code>#[pymethods]</code>. <a href="https://github.com/PyO3/pyo3/pull/2067">#2067</a></li>
 <li>Accept paths in <code>wrap_pyfunction</code> and <code>wrap_pymodule</code>. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
 <li>Add check for correct number of arguments on magic methods. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
 <li><code>wrap_pyfunction!</code> can now wrap a <code>#[pyfunction]</code> which is implemented in a different Rust module or crate. <a href="https://github.com/PyO3/pyo3/pull/2091">#2091</a></li>
+<li>Add <code>PyAny::contains</code> method (<code>in</code> operator for <code>PyAny</code>). <a href="https://github.com/PyO3/pyo3/pull/2115">#2115</a></li>
+<li>Add <code>PyMapping::contains</code> method (<code>in</code> operator for <code>PyMapping</code>). <a href="https://github.com/PyO3/pyo3/pull/2133">#2133</a></li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
@@ -186,16 +189,36 @@ where to find the <code>pyo3</code> crate, in case it has been renamed or is re-
 <li><code>PyErr::new_type</code> now takes an optional docstring and now returns <code>PyResult&lt;Py&lt;PyType&gt;&gt;</code> rather than a <code>ffi::PyTypeObject</code> pointer.</li>
 <li>The <code>create_exception!</code> macro can now take an optional docstring. This docstring, if supplied, is visible to users (with <code>.__doc__</code> and <code>help()</code>) and
 accompanies your error type in your crate's documentation.</li>
+<li><code>__getitem__</code>, <code>__setitem__</code> and <code>__delitem__</code> in <code>#[pymethods]</code> now implement both a Python mapping and sequence by default. <a href="https://github.com/PyO3/pyo3/pull/2065">#2065</a></li>
 <li>Improve performance and error messages for <code>#[derive(FromPyObject)]</code> for enums. <a href="https://github.com/PyO3/pyo3/pull/2068">#2068</a></li>
 <li>Reduce generated LLVM code size (to improve compile times) for:
 <ul>
-<li>internal <code>handle_panic</code> helper <a href="https://github.com/PyO3/pyo3/pull/2074">#2074</a></li>
+<li>internal <code>handle_panic</code> helper <a href="https://github.com/PyO3/pyo3/pull/2074">#2074</a> <a href="https://github.com/PyO3/pyo3/pull/2158">#2158</a></li>
 <li><code>#[pyfunction]</code> and <code>#[pymethods]</code> argument extraction <a href="https://github.com/PyO3/pyo3/pull/2075">#2075</a> <a href="https://github.com/PyO3/pyo3/pull/2085">#2085</a></li>
-<li><code>#[pyclass]</code> type object creation <a href="https://github.com/PyO3/pyo3/pull/2076">#2076</a> <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
+<li><code>#[pyclass]</code> type object creation <a href="https://github.com/PyO3/pyo3/pull/2076">#2076</a> <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a> <a href="https://github.com/PyO3/pyo3/pull/2157">#2157</a></li>
 </ul>
 </li>
 <li><code>__ipow__</code> now supports modulo argument on Python 3.8+. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
 <li><code>pyo3-macros-backend</code> is now compiled with PyO3 cfgs to enable different magic method definitions based on version. <a href="https://github.com/PyO3/pyo3/pull/2083">#2083</a></li>
+<li><code>_PyCFunctionFast</code> now correctly reflects the signature defined in the <a href="https://docs.python.org/3/c-api/structures.html#c._PyCFunctionFast">Python docs</a>. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
+<li><code>PyDateTimeAPI</code> and <code>PyDateTime_TimeZone_UTC</code> are are now unsafe functions instead of statics. <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a></li>
+<li><code>PyDateTimeAPI</code> does not implicitly call <code>PyDateTime_IMPORT</code> anymore to reflect the original Python API more closely. Before the first call to <code>PyDateTime_IMPORT</code> a null pointer is returned. Therefore before calling any of the following FFI functions <code>PyDateTime_IMPORT</code> must be called to avoid undefined behaviour: <a href="https://github.com/PyO3/pyo3/pull/2126">#2126</a>
+<ul>
+<li><code>PyDateTime_TimeZone_UTC</code></li>
+<li><code>PyDate_Check</code></li>
+<li><code>PyDate_CheckExact</code></li>
+<li><code>PyDateTime_Check</code></li>
+<li><code>PyDateTime_CheckExact</code></li>
+<li><code>PyTime_Check</code></li>
+<li><code>PyTime_CheckExact</code></li>
+<li><code>PyDelta_Check</code></li>
+<li><code>PyDelta_CheckExact</code></li>
+<li><code>PyTZInfo_Check</code></li>
+<li><code>PyTZInfo_CheckExact</code></li>
+<li><code>PyDateTime_FromTimestamp</code></li>
+<li><code>PyDate_FromTimestamp</code></li>
+</ul>
+</li>
 </ul>
 <h3 id="removed"><a class="header" href="#removed">Removed</a></h3>
 <ul>
@@ -209,6 +232,9 @@ accompanies your error type in your crate's documentation.</li>
 <li>Fix undefined behavior in <code>PySlice::indices</code>. <a href="https://github.com/PyO3/pyo3/pull/2061">#2061</a></li>
 <li>Use the Rust function path for <code>wrap_pymodule!</code> of a <code>#[pymodule]</code> with a <code>#[pyo3(name = &quot;..&quot;)]</code> attribute, not the Python name. <a href="https://github.com/PyO3/pyo3/pull/2081">#2081</a></li>
 <li>Fix panic in <code>#[pyfunction]</code> generated code when a required argument following an <code>Option</code> was not provided.  <a href="https://github.com/PyO3/pyo3/pull/2093">#2093</a></li>
+<li>Fixed undefined behaviour caused by incorrect <code>ExactSizeIterator</code> implementations. <a href="https://github.com/PyO3/pyo3/pull/2124">#2124</a></li>
+<li>Add missing FFI definitions <code>_PyLong_NumBits</code> and <code>_PyLong_AsByteArray</code> on PyPy. <a href="https://github.com/PyO3/pyo3/pull/2146">#2146</a></li>
+<li>Fix memory leak in implementation of <code>AsPyPointer</code> for <code>Option&lt;T&gt;</code>. <a href="https://github.com/PyO3/pyo3/pull/2160">#2160</a></li>
 </ul>
 <h2 id="a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a class="header" href="#a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a href="https://github.com/pyo3/pyo3/compare/v0.15.0...v0.15.1">0.15.1</a> - 2021-11-19</a></h2>
 <h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>
