@@ -1,9 +1,11 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pyo3-macros-backend/src/pyimpl.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pyimpl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../scrape-examples.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><div class='internal-banner' style='position:fixed; z-index: 99999; color:red;border:3px solid red;margin-left: auto; margin-right: auto; width: 430px;left:0;right: 0;'><div style='display: flex; align-items: center; justify-content: center;'> ⚠️ Internal Docs ⚠️ Not Public API 👉 <a href='https://pyo3.rs/main/doc/pyo3/index.html' style='color:red;text-decoration:underline;'>Official Docs Here</a></div></div>
 
-<nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pyo3_macros_backend/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div>
-                                <input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../pyo3_macros_backend/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pyo3_macros_backend/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -293,45 +295,6 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
@@ -442,10 +405,6 @@
                         <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">get_cfg_attributes</span>(<span class="kw-2">&amp;</span><span class="ident">meth</span>.<span class="ident">attrs</span>);
                         <span class="ident">methods</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(#(#<span class="ident">attrs</span>)<span class="op">*</span> #<span class="ident">token_stream</span>));
                     }
-                    <span class="ident">GeneratedPyMethod::TraitImpl</span>(<span class="ident">token_stream</span>) =&gt; {
-                        <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">get_cfg_attributes</span>(<span class="kw-2">&amp;</span><span class="ident">meth</span>.<span class="ident">attrs</span>);
-                        <span class="ident">trait_impls</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(#(#<span class="ident">attrs</span>)<span class="op">*</span> #<span class="ident">token_stream</span>));
-                    }
                     <span class="ident">GeneratedPyMethod::SlotTraitImpl</span>(<span class="ident">method_name</span>, <span class="ident">token_stream</span>) =&gt; {
                         <span class="ident">implemented_proto_fragments</span>.<span class="ident">insert</span>(<span class="ident">method_name</span>);
                         <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">get_cfg_attributes</span>(<span class="kw-2">&amp;</span><span class="ident">meth</span>.<span class="ident">attrs</span>);
@@ -484,35 +443,19 @@
 
     <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">get_pyo3_crate</span>(<span class="kw-2">&amp;</span><span class="ident">options</span>.<span class="ident">krate</span>);
 
-    <span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">methods_type</span> {
-        <span class="ident">PyClassMethodsType::Specialization</span> =&gt; {
-            <span class="kw">let</span> <span class="ident">methods_registration</span> <span class="op">=</span> <span class="ident">impl_py_methods</span>(<span class="ident">ty</span>, <span class="ident">methods</span>);
-            <span class="kw">let</span> <span class="ident">protos_registration</span> <span class="op">=</span> <span class="ident">impl_protos</span>(<span class="ident">ty</span>, <span class="ident">proto_impls</span>);
+    <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">methods_type</span> {
+        <span class="ident">PyClassMethodsType::Specialization</span> =&gt; <span class="ident">impl_py_methods</span>(<span class="ident">ty</span>, <span class="ident">methods</span>, <span class="ident">proto_impls</span>),
+        <span class="ident">PyClassMethodsType::Inventory</span> =&gt; <span class="ident">submit_methods_inventory</span>(<span class="ident">ty</span>, <span class="ident">methods</span>, <span class="ident">proto_impls</span>),
+    };
 
-            <span class="macro">quote!</span> {
-                <span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
-                    <span class="kw">use</span> #<span class="ident">krate</span> <span class="kw">as</span> <span class="ident">_pyo3</span>;
+    <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> {
+        <span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
+            <span class="kw">use</span> #<span class="ident">krate</span> <span class="kw">as</span> <span class="ident">_pyo3</span>;
 
-                    #(#<span class="ident">trait_impls</span>)<span class="op">*</span>
+            #(#<span class="ident">trait_impls</span>)<span class="op">*</span>
 
-                    #<span class="ident">protos_registration</span>
-
-                    #<span class="ident">methods_registration</span>
-                };
-            }
-        }
-        <span class="ident">PyClassMethodsType::Inventory</span> =&gt; {
-            <span class="kw">let</span> <span class="ident">inventory</span> <span class="op">=</span> <span class="ident">submit_methods_inventory</span>(<span class="ident">ty</span>, <span class="ident">methods</span>, <span class="ident">proto_impls</span>);
-            <span class="macro">quote!</span> {
-                <span class="kw">const</span> <span class="kw">_</span>: () <span class="op">=</span> {
-                    <span class="kw">use</span> #<span class="ident">krate</span> <span class="kw">as</span> <span class="ident">_pyo3</span>;
-
-                    #(#<span class="ident">trait_impls</span>)<span class="op">*</span>
-
-                    #<span class="ident">inventory</span>
-                };
-            }
-        }
+            #<span class="ident">items</span>
+        };
     })
 }
 
@@ -524,7 +467,7 @@
         <span class="ident">_pyo3::class::PyMethodDefType::ClassAttribute</span>({
             <span class="ident">_pyo3::class::PyClassAttributeDef::new</span>(
                 #<span class="ident">python_name</span>,
-                <span class="ident">_pyo3::class::methods::PyClassAttributeFactory</span>({
+                <span class="ident">_pyo3::impl_::pymethods::PyClassAttributeFactory</span>({
                     <span class="kw">fn</span> <span class="ident">__wrap</span>(<span class="ident">py</span>: <span class="ident">_pyo3::Python</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">_pyo3::PyObject</span> {
                         #<span class="ident">deprecations</span>
                         <span class="ident">_pyo3::IntoPy::into_py</span>(#<span class="ident">cls</span>::#<span class="ident">member</span>, <span class="ident">py</span>)
@@ -536,55 +479,46 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen_default_slot_impls</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>, <span class="ident">method_defs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>) -&gt; <span class="ident">TokenStream</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen_default_items</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+    <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
+    <span class="ident">method_defs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> [<span class="ident">syn::ImplItemMethod</span>],
+) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">TokenStream</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
     <span class="comment">// This function uses a lot of `unwrap()`; since method_defs are provided by us, they should</span>
     <span class="comment">// all succeed.</span>
     <span class="kw">let</span> <span class="ident">ty</span>: <span class="ident">syn::Type</span> <span class="op">=</span> <span class="macro">syn::parse_quote!</span>(#<span class="ident">cls</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">method_defs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">method_defs</span>
-        .<span class="ident">into_iter</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">token</span><span class="op">|</span> <span class="ident">syn::parse2</span>::<span class="op">&lt;</span><span class="ident">syn::ImplItemMethod</span><span class="op">&gt;</span>(<span class="ident">token</span>).<span class="ident">unwrap</span>())
-        .<span class="ident">collect</span>();
-
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_impls</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-
-    <span class="kw">for</span> <span class="ident">meth</span> <span class="kw">in</span> <span class="kw-2">&amp;mut</span> <span class="ident">method_defs</span> {
+    <span class="ident">method_defs</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">meth</span><span class="op">|</span> {
         <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">PyFunctionOptions::from_attrs</span>(<span class="kw-2">&amp;mut</span> <span class="ident">meth</span>.<span class="ident">attrs</span>).<span class="ident">unwrap</span>();
         <span class="kw">match</span> <span class="ident">pymethod::gen_py_method</span>(<span class="kw-2">&amp;</span><span class="ident">ty</span>, <span class="kw-2">&amp;mut</span> <span class="ident">meth</span>.<span class="ident">sig</span>, <span class="kw-2">&amp;mut</span> <span class="ident">meth</span>.<span class="ident">attrs</span>, <span class="ident">options</span>).<span class="ident">unwrap</span>() {
             <span class="ident">GeneratedPyMethod::Proto</span>(<span class="ident">token_stream</span>) =&gt; {
                 <span class="kw">let</span> <span class="ident">attrs</span> <span class="op">=</span> <span class="ident">get_cfg_attributes</span>(<span class="kw-2">&amp;</span><span class="ident">meth</span>.<span class="ident">attrs</span>);
-                <span class="ident">proto_impls</span>.<span class="ident">push</span>(<span class="macro">quote!</span>(#(#<span class="ident">attrs</span>)<span class="op">*</span> #<span class="ident">token_stream</span>))
+                <span class="macro">quote!</span>(#(#<span class="ident">attrs</span>)<span class="op">*</span> #<span class="ident">token_stream</span>)
             }
             <span class="ident">GeneratedPyMethod::SlotTraitImpl</span>(..) =&gt; {
                 <span class="macro">panic!</span>(<span class="string">&quot;SlotFragment methods cannot have default implementation!&quot;</span>)
             }
-            <span class="ident">GeneratedPyMethod::Method</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">GeneratedPyMethod::TraitImpl</span>(<span class="kw">_</span>) =&gt; {
+            <span class="ident">GeneratedPyMethod::Method</span>(<span class="kw">_</span>) =&gt; {
                 <span class="macro">panic!</span>(<span class="string">&quot;Only protocol methods can have default implementation!&quot;</span>)
             }
         }
-    }
-
-    <span class="macro">quote!</span> {
-        <span class="kw">impl</span> #<span class="ident">cls</span> {
-            #(#<span class="ident">method_defs</span>)<span class="op">*</span>
-        }
-        <span class="kw">impl</span> <span class="ident">::pyo3::class::impl_::PyClassDefaultSlots</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>
-            <span class="kw">for</span> <span class="ident">::pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span> {
-                <span class="kw">fn</span> <span class="ident">py_class_default_slots</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">::pyo3::ffi::PyType_Slot</span>] {
-                    <span class="kw-2">&amp;</span>[#(#<span class="ident">proto_impls</span>),<span class="kw-2">*</span>]
-                }
-        }
-    }
+    })
 }
 
-<span class="kw">fn</span> <span class="ident">impl_py_methods</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>, <span class="ident">methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>) -&gt; <span class="ident">TokenStream</span> {
+<span class="kw">fn</span> <span class="ident">impl_py_methods</span>(
+    <span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>,
+    <span class="ident">methods</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+    <span class="ident">proto_impls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">TokenStream</span> {
     <span class="macro">quote!</span> {
-        <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyMethods</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
-            <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
+        <span class="kw">impl</span> <span class="ident">_pyo3::impl_::pyclass::PyMethods</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
+            <span class="kw">for</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
         {
-            <span class="kw">fn</span> <span class="ident">py_methods</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] {
-                <span class="kw">static</span> <span class="ident">METHODS</span>: <span class="kw-2">&amp;</span>[<span class="ident">_pyo3::class::methods::PyMethodDefType</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>[#(#<span class="ident">methods</span>),<span class="kw-2">*</span>];
-                <span class="ident">METHODS</span>
+            <span class="kw">fn</span> <span class="ident">py_methods</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span> {
+                <span class="kw">static</span> <span class="ident">ITEMS</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span> <span class="op">=</span> <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span> {
+                    <span class="ident">methods</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">methods</span>),<span class="kw-2">*</span>],
+                    <span class="ident">slots</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">proto_impls</span>),<span class="kw-2">*</span>]
+                };
+                <span class="kw-2">&amp;</span><span class="ident">ITEMS</span>
             }
         }
     }
@@ -600,7 +534,7 @@
             <span class="kw">let</span> <span class="ident">first_implemented</span> <span class="op">=</span> <span class="ident">implemented_proto_fragments</span>.<span class="ident">remove</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">first</span>);
             <span class="kw">let</span> <span class="ident">second_implemented</span> <span class="op">=</span> <span class="ident">implemented_proto_fragments</span>.<span class="ident">remove</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">second</span>);
             <span class="kw">if</span> <span class="ident">first_implemented</span> <span class="op">|</span><span class="op">|</span> <span class="ident">second_implemented</span> {
-                <span class="ident">proto_impls</span>.<span class="ident">push</span>(<span class="macro">quote!</span> { <span class="ident">_pyo3::class::impl_</span>::<span class="macro-nonterminal">$</span><span class="macro">slot!</span>(#<span class="macro-nonterminal">ty</span>) })
+                <span class="ident">proto_impls</span>.<span class="ident">push</span>(<span class="macro">quote!</span> { <span class="ident">_pyo3::impl_::pyclass</span>::<span class="macro-nonterminal">$</span><span class="macro">slot!</span>(#<span class="macro-nonterminal">ty</span>) })
             }
         }};
     }
@@ -627,19 +561,9 @@
     );
     <span class="macro">try_add_shared_slot!</span>(<span class="string">&quot;__pow__&quot;</span>, <span class="string">&quot;__rpow__&quot;</span>, <span class="ident">generate_pyclass_pow_slot</span>);
 
+    <span class="comment">// if this assertion trips, a slot fragment has been implemented which has not been added in the</span>
+    <span class="comment">// list above</span>
     <span class="macro">assert!</span>(<span class="ident">implemented_proto_fragments</span>.<span class="ident">is_empty</span>());
-}
-
-<span class="kw">fn</span> <span class="ident">impl_protos</span>(<span class="ident">ty</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>, <span class="ident">proto_impls</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span>) -&gt; <span class="ident">TokenStream</span> {
-    <span class="macro">quote!</span> {
-        <span class="kw">impl</span> <span class="ident">_pyo3::class::impl_::PyMethodsProtocolSlots</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
-            <span class="kw">for</span> <span class="ident">_pyo3::class::impl_::PyClassImplCollector</span><span class="op">&lt;</span>#<span class="ident">ty</span><span class="op">&gt;</span>
-        {
-            <span class="kw">fn</span> <span class="ident">methods_protocol_slots</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">_pyo3::ffi::PyType_Slot</span>] {
-                <span class="kw-2">&amp;</span>[#(#<span class="ident">proto_impls</span>),<span class="kw-2">*</span>]
-            }
-        }
-    }
 }
 
 <span class="kw">fn</span> <span class="ident">submit_methods_inventory</span>(
@@ -649,8 +573,8 @@
 ) -&gt; <span class="ident">TokenStream</span> {
     <span class="macro">quote!</span> {
         <span class="macro">_pyo3::inventory::submit!</span> {
-            <span class="kw">type</span> <span class="ident">Inventory</span> <span class="op">=</span> <span class="op">&lt;</span>#<span class="ident">ty</span> <span class="kw">as</span> <span class="ident">_pyo3::class::impl_::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::Inventory</span>;
-            <span class="ident">Inventory::new</span>(<span class="kw-2">&amp;</span>[#(#<span class="ident">methods</span>),<span class="kw-2">*</span>], <span class="kw-2">&amp;</span>[#(#<span class="ident">proto_impls</span>),<span class="kw-2">*</span>])
+            <span class="kw">type</span> <span class="ident">Inventory</span> <span class="op">=</span> <span class="op">&lt;</span>#<span class="ident">ty</span> <span class="kw">as</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImpl</span><span class="op">&gt;</span><span class="ident">::Inventory</span>;
+            <span class="ident">Inventory::new</span>(<span class="ident">_pyo3::impl_::pyclass::PyClassItems</span> { <span class="ident">methods</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">methods</span>),<span class="kw-2">*</span>], <span class="ident">slots</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">proto_impls</span>),<span class="kw-2">*</span>] })
         }
     }
 }
@@ -662,5 +586,5 @@
         .<span class="ident">collect</span>()
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (9ad5d82f8 2022-01-18)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
 </body></html>
