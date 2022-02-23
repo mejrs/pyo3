@@ -172,6 +172,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><code>wrap_pyfunction!</code> can now wrap a <code>#[pyfunction]</code> which is implemented in a different Rust module or crate. <a href="https://github.com/PyO3/pyo3/pull/2091">#2091</a></li>
 <li>Add <code>PyAny::contains</code> method (<code>in</code> operator for <code>PyAny</code>). <a href="https://github.com/PyO3/pyo3/pull/2115">#2115</a></li>
 <li>Add <code>PyMapping::contains</code> method (<code>in</code> operator for <code>PyMapping</code>). <a href="https://github.com/PyO3/pyo3/pull/2133">#2133</a></li>
+<li>Add garbage collection magic methods <code>__traverse__</code> and <code>__clear__</code> to <code>#[pymethods]</code>. <a href="https://github.com/PyO3/pyo3/pull/2159">#2159</a></li>
 </ul>
 <h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
 <ul>
@@ -219,10 +220,14 @@ accompanies your error type in your crate's documentation.</li>
 <li><code>PyDate_FromTimestamp</code></li>
 </ul>
 </li>
+<li>Deprecate the <code>gc</code> option for <code>pyclass</code> (e.g. <code>#[pyclass(gc)]</code>). Just implement a <code>__traverse__</code> <code>#[pymethod]</code>. <a href="https://github.com/PyO3/pyo3/pull/2159">#2159</a></li>
+<li>The <code>ml_meth</code> field of <code>PyMethodDef</code> is now represented by the <code>PyMethodDefPointer</code> union <a href="https://github.com/PyO3/pyo3/pull/2166">2166</a></li>
+<li>The <code>PyTypeError</code> thrown when argument parsing failed now contains the nested causes <a href="https://github.com/PyO3/pyo3/pull/2178">2177</a></li>
 </ul>
 <h3 id="removed"><a class="header" href="#removed">Removed</a></h3>
 <ul>
 <li>Remove all functionality deprecated in PyO3 0.14. <a href="https://github.com/PyO3/pyo3/pull/2007">#2007</a></li>
+<li>Remove <code>Default</code> impl for <code>PyMethodDef</code> <a href="https://github.com/PyO3/pyo3/pull/2166">2166</a></li>
 </ul>
 <h3 id="fixed"><a class="header" href="#fixed">Fixed</a></h3>
 <ul>
@@ -235,6 +240,7 @@ accompanies your error type in your crate's documentation.</li>
 <li>Fixed undefined behaviour caused by incorrect <code>ExactSizeIterator</code> implementations. <a href="https://github.com/PyO3/pyo3/pull/2124">#2124</a></li>
 <li>Add missing FFI definitions <code>_PyLong_NumBits</code> and <code>_PyLong_AsByteArray</code> on PyPy. <a href="https://github.com/PyO3/pyo3/pull/2146">#2146</a></li>
 <li>Fix memory leak in implementation of <code>AsPyPointer</code> for <code>Option&lt;T&gt;</code>. <a href="https://github.com/PyO3/pyo3/pull/2160">#2160</a></li>
+<li>Fix the signature of <code>_PyLong_NumBits</code> <a href="https://github.com/PyO3/pyo3/pull/2161">#2161</a></li>
 </ul>
 <h2 id="a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a class="header" href="#a-hrefhttpsgithubcompyo3pyo3comparev0150v01510151a---2021-11-19"><a href="https://github.com/pyo3/pyo3/compare/v0.15.0...v0.15.1">0.15.1</a> - 2021-11-19</a></h2>
 <h3 id="added-1"><a class="header" href="#added-1">Added</a></h3>

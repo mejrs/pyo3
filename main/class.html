@@ -1094,7 +1094,6 @@ impl pyo3::IntoPy&lt;PyObject&gt; for MyClass {
 
 impl pyo3::impl_::pyclass::PyClassImpl for MyClass {
     const DOC: &amp;'static str = &quot;Class for demonstration\u{0}&quot;;
-    const IS_GC: bool = false;
     const IS_BASETYPE: bool = false;
     const IS_SUBCLASS: bool = false;
     type Layout = PyCell&lt;MyClass&gt;;

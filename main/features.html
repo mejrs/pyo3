@@ -189,11 +189,7 @@
 <p>This feature is enabled by default. To disable it, set <code>default-features = false</code> for the <code>pyo3</code> entry in your Cargo.toml.</p>
 </blockquote>
 <h3 id="nightly"><a class="header" href="#nightly"><code>nightly</code></a></h3>
-<p>The <code>nightly</code> feature needs the nightly Rust compiler. This allows PyO3 to use Rust's unstable specialization feature to apply the following optimizations:</p>
-<ul>
-<li><code>FromPyObject</code> for <code>Vec</code> and <code>[T;N]</code> can perform a <code>memcpy</code> when the object supports the Python buffer protocol.</li>
-<li><code>ToBorrowedObject</code> can skip a reference count increase when the provided object is a Python native type.</li>
-</ul>
+<p>The <code>nightly</code> feature needs the nightly Rust compiler. This allows PyO3 to use the auto_traits and negative_impls features to fix the <code>Python::allow_threads</code> function.</p>
 <h3 id="resolve-config"><a class="header" href="#resolve-config"><code>resolve-config</code></a></h3>
 <p>The <code>resolve-config</code> feature of the <code>pyo3-build-config</code> crate controls whether that crate's
 build script automatically resolves a Python interpreter / build configuration. This feature is primarily useful when building PyO3

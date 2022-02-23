@@ -343,7 +343,10 @@ impl NoContains {
 <li><code>__releasebuffer__(&lt;self&gt;, *mut ffi::Py_buffer)</code> (no return value, not even <code>PyResult</code>)</li>
 </ul>
 <h4 id="garbage-collector-integration"><a class="header" href="#garbage-collector-integration">Garbage Collector Integration</a></h4>
-<p>TODO; see <a href="https://github.com/PyO3/pyo3/issues/1884">#1884</a></p>
+<ul>
+<li><code>__traverse__(&lt;self&gt;, visit: pyo3::class::gc::PyVisit) -&gt; Result&lt;(), pyo3::class::gc::PyTraverseError&gt;</code></li>
+<li><code>__clear__(&lt;self&gt;) -&gt; ()</code></li>
+</ul>
 <h3 id="pyproto-traits"><a class="header" href="#pyproto-traits"><code>#[pyproto]</code> traits</a></h3>
 <p>PyO3 can use the <code>#[pyproto]</code> attribute in combination with special traits to implement the magic methods which need slots. The special traits are listed below. See also the <a href="https://pyo3.rs/main/doc/pyo3/class/index.html">documentation for the <code>pyo3::class</code> module</a>.</p>
 <p>Before PyO3 0.15 this was the only supported solution for implementing magic methods. Due to complexity in the implementation and usage, these traits are expected to be deprecated in PyO3 0.16 in favour of the <code>#[pymethods]</code> solution.</p>
@@ -600,15 +603,6 @@ impl PyGCProtocol for ClassWithGCSupport {
 }
 <span class="boring">}
 </span></code></pre></pre>
-<p>Special protocol trait implementations have to be annotated with the <code>#[pyproto]</code> attribute.</p>
-<p>It is also possible to enable GC for custom classes using the <code>gc</code> parameter of the <code>pyclass</code> attribute.
-i.e. <code>#[pyclass(gc)]</code>. In that case instances of custom class participate in Python garbage
-collection, and it is possible to track them with <code>gc</code> module methods. When using the <code>gc</code> parameter,
-it is <em>required</em> to implement the <code>PyGCProtocol</code> trait, failure to do so will result in an error
-at compile time:</p>
-<pre><code class="language-compile_fail">#[pyclass(gc)]
-struct GCTracked {} // Fails because it does not implement PyGCProtocol
-</code></pre>
 <h4 id="iterator-types"><a class="header" href="#iterator-types">Iterator Types</a></h4>
 <p>Iterators can be defined using the
 <a href="https://pyo3.rs/main/doc/pyo3/class/iter/trait.PyIterProtocol.html"><code>PyIterProtocol</code></a> trait.

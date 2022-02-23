@@ -9,7 +9,6 @@
 <div><table><thead><tr><th style="text-align: left">Parameter</th><th style="text-align: left">Description</th></tr></thead><tbody>
 <tr><td style="text-align: left"><span style="white-space: pre"><code>name = &quot;python_name&quot;</code></span></td><td style="text-align: left">Sets the name that Python sees this class as. Defaults to the name of the Rust struct.</td></tr>
 <tr><td style="text-align: left"><span style="white-space: pre"><code>freelist = N</code></span></td><td style="text-align: left">Implements a <a href="https://en.wikipedia.org/wiki/Free_list">free list</a> of size N. This can improve performance for types that are often created and deleted in quick succession. Profile your code to see whether <code>freelist</code> is right for you.</td></tr>
-<tr><td style="text-align: left"><code>gc</code></td><td style="text-align: left">Participate in Python’s <a href="https://pyo3.rs/latest/class/protocols.html#garbage-collector-integration">garbage collection</a>. Required if your type contains references to other Python objects. If you don’t (or incorrectly) implement this, contained Python objects may be hidden from Python’s garbage collector and you may leak memory. Note that leaking memory, while undesirable, <a href="https://doc.rust-lang.org/nomicon/leaking.html">is safe behavior</a>.</td></tr>
 <tr><td style="text-align: left"><code>weakref</code></td><td style="text-align: left">Allows this class to be <a href="https://docs.python.org/3/library/weakref.html">weakly referenceable</a>.</td></tr>
 <tr><td style="text-align: left"><span style="white-space: pre"><code>extends = BaseType</code></span></td><td style="text-align: left">Use a custom baseclass. Defaults to <a href="../prelude/struct.PyAny.html"><code>PyAny</code></a></td></tr>
 <tr><td style="text-align: left"><code>subclass</code></td><td style="text-align: left">Allows other Python classes and <code>#[pyclass]</code> to inherit from this class. Enums cannot be subclassed.</td></tr>
@@ -19,5 +18,5 @@
 </div>
 <p>For more on creating Python classes,
 see the <a href="https://pyo3.rs/latest/class.html">class section of the guide</a>.</p>
-</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>

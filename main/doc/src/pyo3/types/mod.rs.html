@@ -246,6 +246,10 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="doccomment">//! Various types defined by the Python interpreter such as `int`, `str` and `tuple`.</span>
@@ -396,7 +400,11 @@
                 <span class="comment">// Create a very short lived mutable reference and directly</span>
                 <span class="comment">// cast it to a pointer: no mutable references can be aliasing</span>
                 <span class="comment">// because we hold the GIL.</span>
+                <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">addr_of</span>))]</span>
                 <span class="kw">unsafe</span> { <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">typeobject</span> }
+
+                <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">addr_of</span>)]</span>
+                <span class="kw">unsafe</span> { <span class="macro">::std::ptr::addr_of_mut!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">typeobject</span>) }
             }
 
             $(
@@ -490,5 +498,5 @@
 <span class="kw">mod</span> <span class="ident">tuple</span>;
 <span class="kw">mod</span> <span class="ident">typeobject</span>;
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="pyo3" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>

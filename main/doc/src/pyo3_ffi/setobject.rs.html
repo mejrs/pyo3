@@ -139,6 +139,8 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::object</span>::<span class="kw-2">*</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">Py_LIMITED_API</span>))]</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pyport::Py_hash_t</span>;
@@ -223,7 +225,7 @@
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PyFrozenSet_CheckExact</span>(<span class="ident">ob</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
-    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="kw-2">&amp;mut</span> <span class="ident">PyFrozenSet_Type</span>) <span class="kw">as</span> <span class="ident">c_int</span>
+    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PyFrozenSet_Type</span>)) <span class="kw">as</span> <span class="ident">c_int</span>
 }
 
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
@@ -235,8 +237,8 @@
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PyFrozenSet_Check</span>(<span class="ident">ob</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
-    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="kw-2">&amp;mut</span> <span class="ident">PyFrozenSet_Type</span>
-        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="kw-2">&amp;mut</span> <span class="ident">PyFrozenSet_Type</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
+    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PyFrozenSet_Type</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PyFrozenSet_Type</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
 }
 
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
@@ -248,20 +250,21 @@
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PyAnySet_CheckExact</span>(<span class="ident">ob</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
-    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="kw-2">&amp;mut</span> <span class="ident">PySet_Type</span> <span class="op">|</span><span class="op">|</span> <span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="kw-2">&amp;mut</span> <span class="ident">PyFrozenSet_Type</span>) <span class="kw">as</span> <span class="ident">c_int</span>
+    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PySet_Type</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PyFrozenSet_Type</span>)) <span class="kw">as</span> <span class="ident">c_int</span>
 }
 
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PyAnySet_Check</span>(<span class="ident">ob</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
     (<span class="ident">PyAnySet_CheckExact</span>(<span class="ident">ob</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
-        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="kw-2">&amp;mut</span> <span class="ident">PySet_Type</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
-        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="kw-2">&amp;mut</span> <span class="ident">PyFrozenSet_Type</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
+        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PySet_Type</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
+        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PyFrozenSet_Type</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
 }
 
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">Py_3_10</span>)]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PySet_CheckExact</span>(<span class="ident">op</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
-    <span class="ident"><span class="kw">crate</span>::Py_IS_TYPE</span>(<span class="ident">op</span>, <span class="kw-2">&amp;mut</span> <span class="ident">PySet_Type</span>)
+    <span class="ident"><span class="kw">crate</span>::Py_IS_TYPE</span>(<span class="ident">op</span>, <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PySet_Type</span>))
 }
 
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
@@ -273,8 +276,9 @@
 <span class="attribute">#[<span class="ident">inline</span>]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">PyPy</span>))]</span>
 <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">PySet_Check</span>(<span class="ident">ob</span>: <span class="kw-2">*mut</span> <span class="ident">PyObject</span>) -&gt; <span class="ident">c_int</span> {
-    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="kw-2">&amp;mut</span> <span class="ident">PySet_Type</span> <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="kw-2">&amp;mut</span> <span class="ident">PySet_Type</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
+    (<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>) <span class="op">==</span> <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PySet_Type</span>)
+        <span class="op">|</span><span class="op">|</span> <span class="ident">PyType_IsSubtype</span>(<span class="ident">Py_TYPE</span>(<span class="ident">ob</span>), <span class="macro">addr_of_mut_shim!</span>(<span class="ident">PySet_Type</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>) <span class="kw">as</span> <span class="ident">c_int</span>
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_ffi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_ffi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>

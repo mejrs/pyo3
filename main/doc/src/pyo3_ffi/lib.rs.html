@@ -439,6 +439,17 @@
 <span id="434">434</span>
 <span id="435">435</span>
 <span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Raw FFI declarations for Python&#39;s C API.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! PyO3 can be used to write native Python modules or run Python code and modules from Rust.</span>
@@ -524,8 +535,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **`src/lib.rs`**</span>
 <span class="doccomment">//! ```rust</span>
-<span class="doccomment">//! use std::mem::transmute;</span>
 <span class="doccomment">//! use std::os::raw::c_char;</span>
+<span class="doccomment">//! use std::ptr;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! use pyo3_ffi::*;</span>
 <span class="doccomment">//!</span>
@@ -552,13 +563,11 @@
 <span class="doccomment">//!         PyUnicode_FromStringAndSize(version.as_ptr() as *const c_char, version.len() as isize),</span>
 <span class="doccomment">//!     );</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!     // It&#39;s necessary to transmute `sum_as_string` here because functions marked with `METH_FASTCALL`</span>
-<span class="doccomment">//!     // have a different signature. However the `PyMethodDef` struct currently represents all</span>
-<span class="doccomment">//!     // functions as a `PyCFunction`. The python interpreter will cast the function pointer back</span>
-<span class="doccomment">//!     // to `_PyCFunctionFast`.</span>
 <span class="doccomment">//!     let wrapped_sum_as_string = PyMethodDef {</span>
 <span class="doccomment">//!         ml_name: &quot;sum_as_string\0&quot;.as_ptr() as *const c_char,</span>
-<span class="doccomment">//!         ml_meth: Some(transmute::&lt;_PyCFunctionFast, PyCFunction&gt;(sum_as_string)),</span>
+<span class="doccomment">//!         ml_meth: PyMethodDefPointer {</span>
+<span class="doccomment">//!             _PyCFunctionFast: sum_as_string</span>
+<span class="doccomment">//!         },</span>
 <span class="doccomment">//!         ml_flags: METH_FASTCALL,</span>
 <span class="doccomment">//!         ml_doc: &quot;returns the sum of two integers as a string\0&quot;.as_ptr() as *const c_char,</span>
 <span class="doccomment">//!     };</span>
@@ -607,7 +616,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let arg1 = PyLong_AsLong(arg1);</span>
 <span class="doccomment">//!     if !PyErr_Occurred().is_null() {</span>
-<span class="doccomment">//!         return ptr::null()</span>
+<span class="doccomment">//!         return ptr::null_mut()</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let arg2 = *args.add(1);</span>
@@ -617,7 +626,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let arg2 = PyLong_AsLong(arg2);</span>
 <span class="doccomment">//!     if !PyErr_Occurred().is_null() {</span>
-<span class="doccomment">//!         return ptr::null()</span>
+<span class="doccomment">//!         return ptr::null_mut()</span>
 <span class="doccomment">//!     }</span>
 <span class="doccomment">//!     let res = (arg1 + arg2).to_string();</span>
 <span class="doccomment">//!     PyUnicode_FromStringAndSize(res.as_ptr() as *const c_char, res.len() as isize)</span>
@@ -704,6 +713,19 @@
         <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
         <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>([<span class="ident">u8</span>; <span class="number">0</span>]);
     };
+}
+
+<span class="macro">macro_rules!</span> <span class="ident">addr_of_mut_shim</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">place</span>:<span class="ident">expr</span>) =&gt; {{
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">addr_of</span>)]</span>
+        {
+            <span class="macro">::std::ptr::addr_of_mut!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">place</span>)
+        }
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">addr_of</span>))]</span>
+        {
+            <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">place</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span>
+        }
+    }};
 }
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::abstract_</span>::<span class="kw-2">*</span>;
@@ -876,5 +898,5 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">Py_LIMITED_API</span>))]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cpython</span>::<span class="kw-2">*</span>;
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_ffi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_ffi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>
