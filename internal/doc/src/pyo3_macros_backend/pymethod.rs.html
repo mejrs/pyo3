@@ -1136,6 +1136,36 @@
 <span id="1129">1129</span>
 <span id="1130">1130</span>
 <span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
+<span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
+<span id="1161">1161</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="kw">use</span> <span class="ident">std::borrow::Cow</span>;
@@ -1174,14 +1204,88 @@
 
 <span class="kw">impl</span> <span class="ident">PyMethodKind</span> {
     <span class="kw">fn</span> <span class="ident">from_name</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">slot_def</span>) <span class="op">=</span> <span class="ident">pyproto</span>(<span class="ident">name</span>) {
-            <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="ident">slot_def</span>))
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span> <span class="op">==</span> <span class="string">&quot;__call__&quot;</span> {
-            <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Call</span>)
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">slot_fragment_def</span>) <span class="op">=</span> <span class="ident">pyproto_fragment</span>(<span class="ident">name</span>) {
-            <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="ident">slot_fragment_def</span>))
-        } <span class="kw">else</span> {
-            <span class="ident">PyMethodKind::Fn</span>
+        <span class="kw">match</span> <span class="ident">name</span> {
+            <span class="comment">// Protocol implemented through slots</span>
+            <span class="string">&quot;__getattr__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__GETATTR__</span>)),
+            <span class="string">&quot;__str__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__STR__</span>)),
+            <span class="string">&quot;__repr__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__REPR__</span>)),
+            <span class="string">&quot;__hash__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__HASH__</span>)),
+            <span class="string">&quot;__richcmp__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__RICHCMP__</span>)),
+            <span class="string">&quot;__get__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__GET__</span>)),
+            <span class="string">&quot;__iter__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ITER__</span>)),
+            <span class="string">&quot;__next__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__NEXT__</span>)),
+            <span class="string">&quot;__await__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__AWAIT__</span>)),
+            <span class="string">&quot;__aiter__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__AITER__</span>)),
+            <span class="string">&quot;__anext__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ANEXT__</span>)),
+            <span class="string">&quot;__len__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__LEN__</span>)),
+            <span class="string">&quot;__contains__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__CONTAINS__</span>)),
+            <span class="string">&quot;__concat__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__CONCAT__</span>)),
+            <span class="string">&quot;__repeat__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__REPEAT__</span>)),
+            <span class="string">&quot;__getitem__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__GETITEM__</span>)),
+            <span class="string">&quot;__pos__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__POS__</span>)),
+            <span class="string">&quot;__neg__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__NEG__</span>)),
+            <span class="string">&quot;__abs__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ABS__</span>)),
+            <span class="string">&quot;__invert__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__INVERT__</span>)),
+            <span class="string">&quot;__index__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__INDEX__</span>)),
+            <span class="string">&quot;__int__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__INT__</span>)),
+            <span class="string">&quot;__float__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__FLOAT__</span>)),
+            <span class="string">&quot;__bool__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__BOOL__</span>)),
+            <span class="string">&quot;__iadd__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IADD__</span>)),
+            <span class="string">&quot;__isub__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ISUB__</span>)),
+            <span class="string">&quot;__imul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IMUL__</span>)),
+            <span class="string">&quot;__imatmul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IMATMUL__</span>)),
+            <span class="string">&quot;__itruediv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ITRUEDIV__</span>)),
+            <span class="string">&quot;__ifloordiv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IFLOORDIV__</span>)),
+            <span class="string">&quot;__imod__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IMOD__</span>)),
+            <span class="string">&quot;__ipow__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IPOW__</span>)),
+            <span class="string">&quot;__ilshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__ILSHIFT__</span>)),
+            <span class="string">&quot;__irshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IRSHIFT__</span>)),
+            <span class="string">&quot;__iand__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IAND__</span>)),
+            <span class="string">&quot;__ixor__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IXOR__</span>)),
+            <span class="string">&quot;__ior__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__IOR__</span>)),
+            <span class="string">&quot;__getbuffer__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__GETBUFFER__</span>)),
+            <span class="string">&quot;__releasebuffer__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__RELEASEBUFFER__</span>)),
+            <span class="string">&quot;__clear__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Slot</span>(<span class="kw-2">&amp;</span><span class="ident">__CLEAR__</span>)),
+            <span class="comment">// Protocols implemented through traits</span>
+            <span class="string">&quot;__setattr__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__SETATTR__</span>)),
+            <span class="string">&quot;__delattr__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__DELATTR__</span>)),
+            <span class="string">&quot;__set__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__SET__</span>)),
+            <span class="string">&quot;__delete__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__DELETE__</span>)),
+            <span class="string">&quot;__setitem__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__SETITEM__</span>)),
+            <span class="string">&quot;__delitem__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__DELITEM__</span>)),
+            <span class="string">&quot;__add__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__ADD__</span>)),
+            <span class="string">&quot;__radd__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RADD__</span>)),
+            <span class="string">&quot;__sub__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__SUB__</span>)),
+            <span class="string">&quot;__rsub__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RSUB__</span>)),
+            <span class="string">&quot;__mul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__MUL__</span>)),
+            <span class="string">&quot;__rmul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RMUL__</span>)),
+            <span class="string">&quot;__matmul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__MATMUL__</span>)),
+            <span class="string">&quot;__rmatmul__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RMATMUL__</span>)),
+            <span class="string">&quot;__floordiv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__FLOORDIV__</span>)),
+            <span class="string">&quot;__rfloordiv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RFLOORDIV__</span>)),
+            <span class="string">&quot;__truediv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__TRUEDIV__</span>)),
+            <span class="string">&quot;__rtruediv__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RTRUEDIV__</span>)),
+            <span class="string">&quot;__divmod__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__DIVMOD__</span>)),
+            <span class="string">&quot;__rdivmod__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RDIVMOD__</span>)),
+            <span class="string">&quot;__mod__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__MOD__</span>)),
+            <span class="string">&quot;__rmod__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RMOD__</span>)),
+            <span class="string">&quot;__lshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__LSHIFT__</span>)),
+            <span class="string">&quot;__rlshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RLSHIFT__</span>)),
+            <span class="string">&quot;__rshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RSHIFT__</span>)),
+            <span class="string">&quot;__rrshift__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RRSHIFT__</span>)),
+            <span class="string">&quot;__and__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__AND__</span>)),
+            <span class="string">&quot;__rand__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RAND__</span>)),
+            <span class="string">&quot;__xor__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__XOR__</span>)),
+            <span class="string">&quot;__rxor__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RXOR__</span>)),
+            <span class="string">&quot;__or__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__OR__</span>)),
+            <span class="string">&quot;__ror__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__ROR__</span>)),
+            <span class="string">&quot;__pow__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__POW__</span>)),
+            <span class="string">&quot;__rpow__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="kw-2">&amp;</span><span class="ident">__RPOW__</span>)),
+            <span class="comment">// Some tricky protocols which don&#39;t fit the pattern of the rest</span>
+            <span class="string">&quot;__call__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Call</span>),
+            <span class="string">&quot;__traverse__&quot;</span> =&gt; <span class="ident">PyMethodKind::Proto</span>(<span class="ident">PyMethodProtoKind::Traverse</span>),
+            <span class="comment">// Not a proto</span>
+            <span class="kw">_</span> =&gt; <span class="ident">PyMethodKind::Fn</span>,
         }
     }
 }
@@ -1189,6 +1293,7 @@
 <span class="kw">enum</span> <span class="ident">PyMethodProtoKind</span> {
     <span class="ident">Slot</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">SlotDef</span>),
     <span class="ident">Call</span>,
+    <span class="ident">Traverse</span>,
     <span class="ident">SlotFragment</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">SlotFragmentDef</span>),
 }
 
@@ -1245,6 +1350,9 @@
                 }
                 <span class="ident">PyMethodProtoKind::Call</span> =&gt; {
                     <span class="ident">GeneratedPyMethod::Proto</span>(<span class="ident">impl_call_slot</span>(<span class="ident">cls</span>, <span class="ident">method</span>.<span class="ident">spec</span>)<span class="question-mark">?</span>)
+                }
+                <span class="ident">PyMethodProtoKind::Traverse</span> =&gt; {
+                    <span class="ident">GeneratedPyMethod::Proto</span>(<span class="ident">impl_traverse_slot</span>(<span class="ident">cls</span>, <span class="ident">method</span>.<span class="ident">spec</span>)<span class="question-mark">?</span>)
                 }
                 <span class="ident">PyMethodProtoKind::SlotFragment</span>(<span class="ident">slot_fragment_def</span>) =&gt; {
                     <span class="kw">let</span> <span class="ident">proto</span> <span class="op">=</span> <span class="ident">slot_fragment_def</span>.<span class="ident">generate_pyproto_fragment</span>(<span class="ident">cls</span>, <span class="ident">spec</span>)<span class="question-mark">?</span>;
@@ -1354,6 +1462,36 @@
         <span class="ident">_pyo3::ffi::PyType_Slot</span> {
             <span class="ident">slot</span>: <span class="ident">_pyo3::ffi::Py_tp_call</span>,
             <span class="ident">pfunc</span>: <span class="ident">__wrap</span> <span class="kw">as</span> <span class="ident">_pyo3::ffi::ternaryfunc</span> <span class="kw">as</span> <span class="kw">_</span>
+        }
+    }})
+}
+
+<span class="kw">fn</span> <span class="ident">impl_traverse_slot</span>(<span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>, <span class="ident">spec</span>: <span class="ident">FnSpec</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TokenStream</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">ident</span> <span class="op">=</span> <span class="ident">spec</span>.<span class="ident">name</span>;
+    <span class="prelude-val">Ok</span>(<span class="macro">quote!</span> {{
+        <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">__wrap_</span>(
+            <span class="ident">slf</span>: <span class="kw-2">*mut</span> <span class="ident">_pyo3::ffi::PyObject</span>,
+            <span class="ident">visit</span>: <span class="ident">_pyo3::ffi::visitproc</span>,
+            <span class="ident">arg</span>: <span class="kw-2">*mut</span> <span class="ident">::std::os::raw::c_void</span>,
+        ) -&gt; <span class="ident">::std::os::raw::c_int</span>
+        {
+            <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">_pyo3::GILPool::new</span>();
+            <span class="kw">let</span> <span class="ident">py</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">python</span>();
+            <span class="ident">_pyo3::callback::abort_on_traverse_panic</span>(<span class="ident">::std::panic::catch_unwind</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">slf</span> <span class="op">=</span> <span class="ident">py</span>.<span class="ident">from_borrowed_ptr</span>::<span class="op">&lt;</span><span class="ident">_pyo3::PyCell</span><span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">slf</span>);
+
+                <span class="kw">let</span> <span class="ident">visit</span> <span class="op">=</span> <span class="ident">_pyo3::class::gc::PyVisit::from_raw</span>(<span class="ident">visit</span>, <span class="ident">arg</span>, <span class="ident">py</span>);
+                <span class="kw">let</span> <span class="ident">borrow</span> <span class="op">=</span> <span class="ident">slf</span>.<span class="ident">try_borrow</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="ident">::std::result::Result::Ok</span>(<span class="ident">borrow</span>) <span class="op">=</span> <span class="ident">borrow</span> {
+                    <span class="ident">_pyo3::class::gc::unwrap_traverse_result</span>(<span class="ident">borrow</span>.#<span class="ident">ident</span>(<span class="ident">visit</span>))
+                } <span class="kw">else</span> {
+                    <span class="number">0</span>
+                }
+            }))
+        }
+        <span class="ident">_pyo3::ffi::PyType_Slot</span> {
+            <span class="ident">slot</span>: <span class="ident">_pyo3::ffi::Py_tp_traverse</span>,
+            <span class="ident">pfunc</span>: <span class="ident">__wrap_</span> <span class="kw">as</span> <span class="ident">_pyo3::ffi::traverseproc</span> <span class="kw">as</span> <span class="kw">_</span>
         }
     }})
 }
@@ -1634,6 +1772,8 @@
 <span class="kw">const</span> <span class="ident">__CONTAINS__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_sq_contains&quot;</span>, <span class="string">&quot;objobjproc&quot;</span>)
     .<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[<span class="ident">Ty::Object</span>])
     .<span class="ident">ret_ty</span>(<span class="ident">Ty::Int</span>);
+<span class="kw">const</span> <span class="ident">__CONCAT__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_sq_concat&quot;</span>, <span class="string">&quot;binaryfunc&quot;</span>).<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[<span class="ident">Ty::Object</span>]);
+<span class="kw">const</span> <span class="ident">__REPEAT__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_sq_repeat&quot;</span>, <span class="string">&quot;ssizeargfunc&quot;</span>).<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[<span class="ident">Ty::PySsizeT</span>]);
 <span class="kw">const</span> <span class="ident">__GETITEM__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_mp_subscript&quot;</span>, <span class="string">&quot;binaryfunc&quot;</span>).<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[<span class="ident">Ty::Object</span>]);
 
 <span class="kw">const</span> <span class="ident">__POS__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_nb_positive&quot;</span>, <span class="string">&quot;unaryfunc&quot;</span>);
@@ -1705,49 +1845,9 @@
     .<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[<span class="ident">Ty::PyBuffer</span>])
     .<span class="ident">ret_ty</span>(<span class="ident">Ty::Void</span>)
     .<span class="ident">require_unsafe</span>();
-
-<span class="kw">fn</span> <span class="ident">pyproto</span>(<span class="ident">method_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">SlotDef</span><span class="op">&gt;</span> {
-    <span class="kw">match</span> <span class="ident">method_name</span> {
-        <span class="string">&quot;__getattr__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__GETATTR__</span>),
-        <span class="string">&quot;__str__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__STR__</span>),
-        <span class="string">&quot;__repr__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__REPR__</span>),
-        <span class="string">&quot;__hash__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__HASH__</span>),
-        <span class="string">&quot;__richcmp__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RICHCMP__</span>),
-        <span class="string">&quot;__get__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__GET__</span>),
-        <span class="string">&quot;__iter__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ITER__</span>),
-        <span class="string">&quot;__next__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__NEXT__</span>),
-        <span class="string">&quot;__await__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__AWAIT__</span>),
-        <span class="string">&quot;__aiter__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__AITER__</span>),
-        <span class="string">&quot;__anext__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ANEXT__</span>),
-        <span class="string">&quot;__len__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__LEN__</span>),
-        <span class="string">&quot;__contains__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__CONTAINS__</span>),
-        <span class="string">&quot;__getitem__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__GETITEM__</span>),
-        <span class="string">&quot;__pos__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__POS__</span>),
-        <span class="string">&quot;__neg__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__NEG__</span>),
-        <span class="string">&quot;__abs__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ABS__</span>),
-        <span class="string">&quot;__invert__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__INVERT__</span>),
-        <span class="string">&quot;__index__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__INDEX__</span>),
-        <span class="string">&quot;__int__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__INT__</span>),
-        <span class="string">&quot;__float__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__FLOAT__</span>),
-        <span class="string">&quot;__bool__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__BOOL__</span>),
-        <span class="string">&quot;__iadd__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IADD__</span>),
-        <span class="string">&quot;__isub__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ISUB__</span>),
-        <span class="string">&quot;__imul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IMUL__</span>),
-        <span class="string">&quot;__imatmul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IMATMUL__</span>),
-        <span class="string">&quot;__itruediv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ITRUEDIV__</span>),
-        <span class="string">&quot;__ifloordiv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IFLOORDIV__</span>),
-        <span class="string">&quot;__imod__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IMOD__</span>),
-        <span class="string">&quot;__ipow__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IPOW__</span>),
-        <span class="string">&quot;__ilshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ILSHIFT__</span>),
-        <span class="string">&quot;__irshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IRSHIFT__</span>),
-        <span class="string">&quot;__iand__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IAND__</span>),
-        <span class="string">&quot;__ixor__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IXOR__</span>),
-        <span class="string">&quot;__ior__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__IOR__</span>),
-        <span class="string">&quot;__getbuffer__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__GETBUFFER__</span>),
-        <span class="string">&quot;__releasebuffer__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RELEASEBUFFER__</span>),
-        <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
-    }
-}
+<span class="kw">const</span> <span class="ident">__CLEAR__</span>: <span class="ident">SlotDef</span> <span class="op">=</span> <span class="ident">SlotDef::new</span>(<span class="string">&quot;Py_tp_clear&quot;</span>, <span class="string">&quot;inquiry&quot;</span>)
+    .<span class="ident">arguments</span>(<span class="kw-2">&amp;</span>[])
+    .<span class="ident">ret_ty</span>(<span class="ident">Ty::Int</span>);
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">enum</span> <span class="ident">Ty</span> {
@@ -2183,46 +2283,6 @@
     .<span class="ident">extract_error_mode</span>(<span class="ident">ExtractErrorMode::NotImplemented</span>)
     .<span class="ident">ret_ty</span>(<span class="ident">Ty::Object</span>);
 
-<span class="kw">fn</span> <span class="ident">pyproto_fragment</span>(<span class="ident">method_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">SlotFragmentDef</span><span class="op">&gt;</span> {
-    <span class="kw">match</span> <span class="ident">method_name</span> {
-        <span class="string">&quot;__setattr__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__SETATTR__</span>),
-        <span class="string">&quot;__delattr__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__DELATTR__</span>),
-        <span class="string">&quot;__set__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__SET__</span>),
-        <span class="string">&quot;__delete__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__DELETE__</span>),
-        <span class="string">&quot;__setitem__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__SETITEM__</span>),
-        <span class="string">&quot;__delitem__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__DELITEM__</span>),
-        <span class="string">&quot;__add__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ADD__</span>),
-        <span class="string">&quot;__radd__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RADD__</span>),
-        <span class="string">&quot;__sub__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__SUB__</span>),
-        <span class="string">&quot;__rsub__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RSUB__</span>),
-        <span class="string">&quot;__mul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__MUL__</span>),
-        <span class="string">&quot;__rmul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RMUL__</span>),
-        <span class="string">&quot;__matmul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__MATMUL__</span>),
-        <span class="string">&quot;__rmatmul__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RMATMUL__</span>),
-        <span class="string">&quot;__floordiv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__FLOORDIV__</span>),
-        <span class="string">&quot;__rfloordiv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RFLOORDIV__</span>),
-        <span class="string">&quot;__truediv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__TRUEDIV__</span>),
-        <span class="string">&quot;__rtruediv__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RTRUEDIV__</span>),
-        <span class="string">&quot;__divmod__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__DIVMOD__</span>),
-        <span class="string">&quot;__rdivmod__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RDIVMOD__</span>),
-        <span class="string">&quot;__mod__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__MOD__</span>),
-        <span class="string">&quot;__rmod__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RMOD__</span>),
-        <span class="string">&quot;__lshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__LSHIFT__</span>),
-        <span class="string">&quot;__rlshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RLSHIFT__</span>),
-        <span class="string">&quot;__rshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RSHIFT__</span>),
-        <span class="string">&quot;__rrshift__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RRSHIFT__</span>),
-        <span class="string">&quot;__and__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__AND__</span>),
-        <span class="string">&quot;__rand__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RAND__</span>),
-        <span class="string">&quot;__xor__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__XOR__</span>),
-        <span class="string">&quot;__rxor__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RXOR__</span>),
-        <span class="string">&quot;__or__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__OR__</span>),
-        <span class="string">&quot;__ror__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__ROR__</span>),
-        <span class="string">&quot;__pow__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__POW__</span>),
-        <span class="string">&quot;__rpow__&quot;</span> =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">__RPOW__</span>),
-        <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
-    }
-}
-
 <span class="kw">fn</span> <span class="ident">extract_proto_arguments</span>(
     <span class="ident">cls</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Type</span>,
     <span class="ident">py</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>,
@@ -2268,5 +2328,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>

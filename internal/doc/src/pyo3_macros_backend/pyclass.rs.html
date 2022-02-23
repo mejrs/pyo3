@@ -1011,32 +1011,12 @@
 <span id="1004">1004</span>
 <span id="1005">1005</span>
 <span id="1006">1006</span>
-<span id="1007">1007</span>
-<span id="1008">1008</span>
-<span id="1009">1009</span>
-<span id="1010">1010</span>
-<span id="1011">1011</span>
-<span id="1012">1012</span>
-<span id="1013">1013</span>
-<span id="1014">1014</span>
-<span id="1015">1015</span>
-<span id="1016">1016</span>
-<span id="1017">1017</span>
-<span id="1018">1018</span>
-<span id="1019">1019</span>
-<span id="1020">1020</span>
-<span id="1021">1021</span>
-<span id="1022">1022</span>
-<span id="1023">1023</span>
-<span id="1024">1024</span>
-<span id="1025">1025</span>
-<span id="1026">1026</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::attributes</span>::{
     <span class="self">self</span>, <span class="ident">take_pyo3_options</span>, <span class="ident">CrateAttribute</span>, <span class="ident">NameAttribute</span>, <span class="ident">TextSignatureAttribute</span>,
 };
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::deprecations::Deprecations</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::deprecations</span>::{<span class="ident">Deprecation</span>, <span class="ident">Deprecations</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::konst</span>::{<span class="ident">ConstAttributes</span>, <span class="ident">ConstSpec</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pyimpl</span>::{<span class="ident">gen_default_items</span>, <span class="ident">gen_py_const</span>, <span class="ident">PyClassMethodsType</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::pymethod</span>::{<span class="ident">impl_py_getter_def</span>, <span class="ident">impl_py_setter_def</span>, <span class="ident">PropertyType</span>};
@@ -1062,12 +1042,12 @@
     <span class="kw">pub</span> <span class="ident">base</span>: <span class="ident">syn::TypePath</span>,
     <span class="kw">pub</span> <span class="ident">has_dict</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">has_weaklist</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">is_gc</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">is_basetype</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">has_extends</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">has_unsendable</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">module</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">syn::LitStr</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">class_kind</span>: <span class="ident">PyClassKind</span>,
+    <span class="kw">pub</span> <span class="ident">deprecations</span>: <span class="ident">Deprecations</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PyClassArgs</span> {
@@ -1096,11 +1076,11 @@
             <span class="ident">base</span>: <span class="macro">parse_quote!</span> { <span class="ident">_pyo3::PyAny</span> },
             <span class="ident">has_dict</span>: <span class="bool-val">false</span>,
             <span class="ident">has_weaklist</span>: <span class="bool-val">false</span>,
-            <span class="ident">is_gc</span>: <span class="bool-val">false</span>,
             <span class="ident">is_basetype</span>: <span class="bool-val">false</span>,
             <span class="ident">has_extends</span>: <span class="bool-val">false</span>,
             <span class="ident">has_unsendable</span>: <span class="bool-val">false</span>,
             <span class="ident">class_kind</span>,
+            <span class="ident">deprecations</span>: <span class="ident">Deprecations::new</span>(),
         }
     }
 
@@ -1191,9 +1171,9 @@
     <span class="kw">fn</span> <span class="ident">add_path</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">exp</span>: <span class="kw-2">&amp;</span><span class="ident">syn::ExprPath</span>) -&gt; <span class="ident">syn::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">flag</span> <span class="op">=</span> <span class="ident">exp</span>.<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">first</span>().<span class="ident">unwrap</span>().<span class="ident">ident</span>.<span class="ident">to_string</span>();
         <span class="kw">match</span> <span class="ident">flag</span>.<span class="ident">as_str</span>() {
-            <span class="string">&quot;gc&quot;</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">is_gc</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            }
+            <span class="string">&quot;gc&quot;</span> =&gt; <span class="self">self</span>
+                .<span class="ident">deprecations</span>
+                .<span class="ident">push</span>(<span class="ident">Deprecation::PyClassGcOption</span>, <span class="ident">exp</span>.<span class="ident">span</span>()),
             <span class="string">&quot;weakref&quot;</span> =&gt; {
                 <span class="self">self</span>.<span class="ident">has_weaklist</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
@@ -1790,7 +1770,6 @@
             <span class="self">self</span>.<span class="ident">impl_into_py</span>(),
             <span class="self">self</span>.<span class="ident">impl_pyclassimpl</span>(),
             <span class="self">self</span>.<span class="ident">impl_freelist</span>(),
-            <span class="self">self</span>.<span class="ident">impl_gc</span>(),
         ]
         .<span class="ident">into_iter</span>()
         .<span class="ident">collect</span>()
@@ -1859,7 +1838,6 @@
     <span class="kw">fn</span> <span class="ident">impl_pyclassimpl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
         <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
         <span class="kw">let</span> <span class="ident">doc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">doc</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="macro">quote!</span> {<span class="string">&quot;\0&quot;</span>}, <span class="op">|</span><span class="ident">doc</span><span class="op">|</span> <span class="macro">quote!</span> {#<span class="ident">doc</span>});
-        <span class="kw">let</span> <span class="ident">is_gc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">is_gc</span>;
         <span class="kw">let</span> <span class="ident">is_basetype</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">is_basetype</span>;
         <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">base</span>;
         <span class="kw">let</span> <span class="ident">is_subclass</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">has_extends</span>;
@@ -1937,10 +1915,11 @@
         <span class="kw">let</span> <span class="ident">default_slots</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">default_slots</span>;
         <span class="kw">let</span> <span class="ident">freelist_slots</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">freelist_slots</span>();
 
+        <span class="kw">let</span> <span class="ident">deprecations</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">attr</span>.<span class="ident">deprecations</span>;
+
         <span class="macro">quote!</span> {
             <span class="kw">impl</span> <span class="ident">_pyo3::impl_::pyclass::PyClassImpl</span> <span class="kw">for</span> #<span class="ident">cls</span> {
                 <span class="kw">const</span> <span class="ident">DOC</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> #<span class="ident">doc</span>;
-                <span class="kw">const</span> <span class="ident">IS_GC</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_gc</span>;
                 <span class="kw">const</span> <span class="ident">IS_BASETYPE</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_basetype</span>;
                 <span class="kw">const</span> <span class="ident">IS_SUBCLASS</span>: <span class="ident">bool</span> <span class="op">=</span> #<span class="ident">is_subclass</span>;
 
@@ -1952,6 +1931,7 @@
                 <span class="kw">fn</span> <span class="ident">for_all_items</span>(<span class="ident">visitor</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">::std::ops::FnMut</span>(<span class="op">&amp;</span> <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>)) {
                     <span class="kw">use</span> <span class="ident">_pyo3::impl_::pyclass</span>::<span class="kw-2">*</span>;
                     <span class="kw">let</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">PyClassImplCollector</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="ident">::new</span>();
+                    #<span class="ident">deprecations</span>;
                     <span class="kw">static</span> <span class="ident">INTRINSIC_ITEMS</span>: <span class="ident">PyClassItems</span> <span class="op">=</span> <span class="ident">PyClassItems</span> {
                         <span class="ident">methods</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">default_methods</span>),<span class="kw-2">*</span>],
                         <span class="ident">slots</span>: <span class="kw-2">&amp;</span>[#(#<span class="ident">default_slots</span>),<span class="op">*</span> #(#<span class="ident">freelist_slots</span>),<span class="kw-2">*</span>],
@@ -2014,26 +1994,6 @@
             <span class="ident">Vec::new</span>()
         }
     }
-
-    <span class="doccomment">/// Enforce at compile time that PyGCProtocol is implemented</span>
-    <span class="kw">fn</span> <span class="ident">impl_gc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TokenStream</span> {
-        <span class="kw">let</span> <span class="ident">cls</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cls</span>;
-        <span class="kw">let</span> <span class="ident">attr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">attr</span>;
-        <span class="kw">if</span> <span class="ident">attr</span>.<span class="ident">is_gc</span> {
-            <span class="kw">let</span> <span class="ident">closure_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;__assertion_closure_{}&quot;</span>, <span class="ident">cls</span>);
-            <span class="kw">let</span> <span class="ident">closure_token</span> <span class="op">=</span> <span class="ident">syn::Ident::new</span>(<span class="kw-2">&amp;</span><span class="ident">closure_name</span>, <span class="ident">Span::call_site</span>());
-            <span class="macro">quote!</span> {
-                <span class="kw">fn</span> #<span class="ident">closure_token</span>() {
-                    <span class="kw">use</span> <span class="ident">_pyo3::class</span>;
-
-                    <span class="kw">fn</span> <span class="ident">_assert_implements_protocol</span><span class="op">&lt;</span><span class="lifetime">&#39;p</span>, <span class="ident">T</span>: <span class="ident">_pyo3::class::PyGCProtocol</span><span class="op">&lt;</span><span class="lifetime">&#39;p</span><span class="op">&gt;</span><span class="op">&gt;</span>() {}
-                    <span class="ident">_assert_implements_protocol</span>::<span class="op">&lt;</span>#<span class="ident">cls</span><span class="op">&gt;</span>();
-                }
-            }
-        } <span class="kw">else</span> {
-            <span class="macro">quote!</span> {}
-        }
-    }
 }
 
 <span class="kw">fn</span> <span class="ident">define_inventory_class</span>(<span class="ident">inventory_class_name</span>: <span class="kw-2">&amp;</span><span class="ident">syn::Ident</span>) -&gt; <span class="ident">TokenStream</span> {
@@ -2043,7 +2003,7 @@
             <span class="ident">items</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>,
         }
         <span class="kw">impl</span> #<span class="ident">inventory_class_name</span> {
-            <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">items</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>) -&gt; <span class="self">Self</span> {
+            <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">items</span>: <span class="ident">_pyo3::impl_::pyclass::PyClassItems</span>) -&gt; <span class="self">Self</span> {
                 <span class="self">Self</span> { <span class="ident">items</span> }
             }
         }
@@ -2058,5 +2018,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros_backend" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>

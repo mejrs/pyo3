@@ -289,8 +289,6 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (c) 2017-present PyO3 Project and Contributors</span>
 <span class="doccomment">//! This crate declares only the proc macro attributes, as a crate defining proc macro attributes</span>
 <span class="doccomment">//! must not contain any other public items.</span>
@@ -379,12 +377,11 @@
 <span class="doccomment">/// |  Parameter  |  Description |</span>
 <span class="doccomment">/// | :-  | :- |</span>
 <span class="doccomment">/// | &lt;span style=&quot;white-space: pre&quot;&gt;`name = &quot;python_name&quot;`&lt;/span&gt; | Sets the name that Python sees this class as. Defaults to the name of the Rust struct. |</span>
-<span class="doccomment">/// | &lt;span style=&quot;white-space: pre&quot;&gt;`freelist = N`&lt;/span&gt; |  Implements a [free list][10] of size N. This can improve performance for types that are often created and deleted in quick succession. Profile your code to see whether `freelist` is right for you.  |</span>
-<span class="doccomment">/// | `gc`  | Participate in Python&#39;s [garbage collection][5]. Required if your type contains references to other Python objects. If you don&#39;t (or incorrectly) implement this, contained Python objects may be hidden from Python&#39;s garbage collector and you may leak memory. Note that leaking memory, while undesirable, [is safe behavior][7].|</span>
+<span class="doccomment">/// | &lt;span style=&quot;white-space: pre&quot;&gt;`freelist = N`&lt;/span&gt; |  Implements a [free list][9] of size N. This can improve performance for types that are often created and deleted in quick succession. Profile your code to see whether `freelist` is right for you.  |</span>
 <span class="doccomment">/// | `weakref` | Allows this class to be [weakly referenceable][6]. |</span>
 <span class="doccomment">/// | &lt;span style=&quot;white-space: pre&quot;&gt;`extends = BaseType`&lt;/span&gt;  | Use a custom baseclass. Defaults to [`PyAny`][4] |</span>
 <span class="doccomment">/// | `subclass` | Allows other Python classes and `#[pyclass]` to inherit from this class. Enums cannot be subclassed. |</span>
-<span class="doccomment">/// | `unsendable` | Required if your struct is not [`Send`][3]. Rather than using `unsendable`, consider implementing your struct in a threadsafe way by e.g. substituting [`Rc`][8] with [`Arc`][9]. By using `unsendable`, your class will panic when accessed by another thread.|</span>
+<span class="doccomment">/// | `unsendable` | Required if your struct is not [`Send`][3]. Rather than using `unsendable`, consider implementing your struct in a threadsafe way by e.g. substituting [`Rc`][7] with [`Arc`][8]. By using `unsendable`, your class will panic when accessed by another thread.|</span>
 <span class="doccomment">/// | &lt;span style=&quot;white-space: pre&quot;&gt;`module = &quot;module_name&quot;`&lt;/span&gt; |  Python code will see the class as being defined in this module. Defaults to `builtins`. |</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// For more on creating Python classes,</span>
@@ -396,10 +393,9 @@
 <span class="doccomment">/// [4]: ../prelude/struct.PyAny.html</span>
 <span class="doccomment">/// [5]: https://pyo3.rs/latest/class/protocols.html#garbage-collector-integration</span>
 <span class="doccomment">/// [6]: https://docs.python.org/3/library/weakref.html</span>
-<span class="doccomment">/// [7]: https://doc.rust-lang.org/nomicon/leaking.html</span>
-<span class="doccomment">/// [8]: std::rc::Rc</span>
-<span class="doccomment">/// [9]: std::sync::Arc</span>
-<span class="doccomment">/// [10]: https://en.wikipedia.org/wiki/Free_list</span>
+<span class="doccomment">/// [7]: std::rc::Rc</span>
+<span class="doccomment">/// [8]: std::sync::Arc</span>
+<span class="doccomment">/// [9]: https://en.wikipedia.org/wiki/Free_list</span>
 <span class="attribute">#[<span class="ident">proc_macro_attribute</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pyclass</span>(<span class="ident">attr</span>: <span class="ident">TokenStream</span>, <span class="ident">input</span>: <span class="ident">TokenStream</span>) -&gt; <span class="ident">TokenStream</span> {
     <span class="kw">use</span> <span class="ident">syn::Item</span>;
@@ -578,5 +574,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0-nightly (5d8767cb2 2022-02-12)" ></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pyo3_macros" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.61.0-nightly (68369a041 2022-02-22)" ></div>
 </body></html>
