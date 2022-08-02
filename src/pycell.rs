@@ -222,7 +222,11 @@ use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
 
 pub struct EmptySlot(());
-pub struct BorrowChecker(Cell<BorrowFlag>);
+pub struct BorrowChecker {
+    flag: Cell<BorrowFlag>,
+    #[cfg(feature = "debug_pycell")]
+    borrowed_at: std::cell::Cell<Option<&'static std::panic::Location<'static>>>,
+}
 
 pub trait PyClassBorrowChecker {
     /// Initial value for self
@@ -274,45 +278,82 @@ impl PyClassBorrowChecker for EmptySlot {
 impl PyClassBorrowChecker for BorrowChecker {
     #[inline]
     fn new() -> Self {
-        Self(Cell::new(BorrowFlag::UNUSED))
-    }
-
-    fn try_borrow(&self) -> Result<(), PyBorrowError> {
-        let flag = self.0.get();
-        if flag != BorrowFlag::HAS_MUTABLE_BORROW {
-            self.0.set(flag.increment());
-            Ok(())
-        } else {
-            Err(PyBorrowError { _private: () })
+        Self {
+            flag: Cell::new(BorrowFlag::UNUSED),
+            #[cfg(feature = "debug_pycell")]
+            borrowed_at: Cell::new(None),
         }
     }
 
-    fn try_borrow_unguarded(&self) -> Result<(), PyBorrowError> {
-        let flag = self.0.get();
+    #[track_caller]
+    fn try_borrow(&self) -> Result<(), PyBorrowError> {
+        let flag = self.flag.get();
         if flag != BorrowFlag::HAS_MUTABLE_BORROW {
+            self.flag.set(flag.increment());
+            #[cfg(feature = "debug_pycell")]
+            {
+                self.borrowed_at.set(Some(std::panic::Location::caller()));
+            }
             Ok(())
         } else {
-            Err(PyBorrowError { _private: () })
+            Err(PyBorrowError {
+                _private: (),
+                #[cfg(feature = "debug_pycell")]
+                location: self.borrowed_at.get().unwrap(),
+                #[cfg(feature = "debug_pycell")]
+                borrow_location: std::panic::Location::caller(),
+            })
+        }
+    }
+
+    #[track_caller]
+    fn try_borrow_unguarded(&self) -> Result<(), PyBorrowError> {
+        let flag = self.flag.get();
+        if flag != BorrowFlag::HAS_MUTABLE_BORROW {
+            #[cfg(feature = "debug_pycell")]
+            {
+                self.borrowed_at.set(Some(std::panic::Location::caller()));
+            }
+            Ok(())
+        } else {
+            Err(PyBorrowError {
+                _private: (),
+                #[cfg(feature = "debug_pycell")]
+                location: self.borrowed_at.get().unwrap(),
+                #[cfg(feature = "debug_pycell")]
+                borrow_location: std::panic::Location::caller(),
+            })
         }
     }
 
     fn release_borrow(&self) {
-        let flag = self.0.get();
-        self.0.set(flag.decrement())
+        let flag = self.flag.get();
+        self.flag.set(flag.decrement())
     }
 
+    #[track_caller]
     fn try_borrow_mut(&self) -> Result<(), PyBorrowMutError> {
-        let flag = self.0.get();
+        let flag = self.flag.get();
         if flag == BorrowFlag::UNUSED {
-            self.0.set(BorrowFlag::HAS_MUTABLE_BORROW);
+            self.flag.set(BorrowFlag::HAS_MUTABLE_BORROW);
+            #[cfg(feature = "debug_pycell")]
+            {
+                self.borrowed_at.set(Some(std::panic::Location::caller()));
+            }
             Ok(())
         } else {
-            Err(PyBorrowMutError { _private: () })
+            Err(PyBorrowMutError {
+                _private: (),
+                #[cfg(feature = "debug_pycell")]
+                location: self.borrowed_at.get().unwrap(),
+                #[cfg(feature = "debug_pycell")]
+                borrow_location: std::panic::Location::caller(),
+            })
         }
     }
 
     fn release_borrow_mut(&self) {
-        self.0.set(BorrowFlag::UNUSED)
+        self.flag.set(BorrowFlag::UNUSED)
     }
 }
 
@@ -465,8 +506,15 @@ impl<T: PyClass> PyCell<T> {
     ///
     /// Panics if the value is currently mutably borrowed. For a non-panicking variant, use
     /// [`try_borrow`](#method.try_borrow).
+    #[track_caller]
     pub fn borrow(&self) -> PyRef<'_, T> {
-        self.try_borrow().expect("Already mutably borrowed")
+        match self.try_borrow(){
+            Ok(b) => b,
+            #[cfg(feature = "debug_pycell")]
+            Err(e) => panic!("Already mutably borrowed: this PyCell has an outstanding borrow originating at {}; current location: {}", e.location, e.borrow_location),
+            #[cfg(not(feature = "debug_pycell"))]
+            Err(_) => panic!("Already mutably borrowed")
+        }
     }
 
     /// Mutably borrows the value `T`. This borrow lasts as long as the returned `PyRefMut` exists.
@@ -475,11 +523,18 @@ impl<T: PyClass> PyCell<T> {
     ///
     /// Panics if the value is currently borrowed. For a non-panicking variant, use
     /// [`try_borrow_mut`](#method.try_borrow_mut).
+    #[track_caller]
     pub fn borrow_mut(&self) -> PyRefMut<'_, T>
     where
         T: PyClass<Frozen = False>,
     {
-        self.try_borrow_mut().expect("Already borrowed")
+        match self.try_borrow_mut(){
+            Ok(b) => b,
+            #[cfg(feature = "debug_pycell")]
+            Err(e) => panic!("Already borrowed: this PyCell has an outstanding borrow originating at {}; current location: {}", e.location, e.borrow_location),
+            #[cfg(not(feature = "debug_pycell"))]
+            Err(_) => panic!("Already borrowed")
+        }
     }
 
     /// Immutably borrows the value `T`, returning an error if the value is currently
@@ -507,6 +562,7 @@ impl<T: PyClass> PyCell<T> {
     ///     }
     /// });
     /// ```
+    #[track_caller]
     pub fn try_borrow(&self) -> Result<PyRef<'_, T>, PyBorrowError> {
         self.ensure_threadsafe();
         self.borrow_checker()
@@ -535,6 +591,7 @@ impl<T: PyClass> PyCell<T> {
     ///     assert!(c.try_borrow_mut().is_ok());
     /// });
     /// ```
+    #[track_caller]
     pub fn try_borrow_mut(&self) -> Result<PyRefMut<'_, T>, PyBorrowMutError>
     where
         T: PyClass<Frozen = False>,
@@ -574,6 +631,7 @@ impl<T: PyClass> PyCell<T> {
     ///     }
     /// });
     /// ```
+    #[track_caller]
     pub unsafe fn try_borrow_unguarded(&self) -> Result<&T, PyBorrowError> {
         self.ensure_threadsafe();
         self.borrow_checker()
@@ -587,6 +645,7 @@ impl<T: PyClass> PyCell<T> {
     ///
     /// Panics if the value is currently borrowed.
     #[inline]
+    #[track_caller]
     pub fn replace(&self, t: T) -> T
     where
         T: PyClass<Frozen = False>,
@@ -599,6 +658,7 @@ impl<T: PyClass> PyCell<T> {
     /// # Panics
     ///
     /// Panics if the value is currently borrowed.
+    #[track_caller]
     pub fn replace_with<F: FnOnce(&mut T) -> T>(&self, f: F) -> T
     where
         T: PyClass<Frozen = False>,
@@ -988,11 +1048,20 @@ impl BorrowFlag {
 /// If this error is allowed to bubble up into Python code it will raise a `RuntimeError`.
 pub struct PyBorrowError {
     _private: (),
+    #[cfg(feature = "debug_pycell")]
+    location: &'static std::panic::Location<'static>,
+    #[cfg(feature = "debug_pycell")]
+    borrow_location: &'static std::panic::Location<'static>,
 }
 
 impl fmt::Debug for PyBorrowError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("PyBorrowError").finish()
+        let mut builder = f.debug_struct("PyBorrowError");
+
+        #[cfg(feature = "debug_pycell")]
+        builder.field("location", self.location);
+
+        builder.finish()
     }
 }
 
@@ -1013,11 +1082,20 @@ impl From<PyBorrowError> for PyErr {
 /// If this error is allowed to bubble up into Python code it will raise a `RuntimeError`.
 pub struct PyBorrowMutError {
     _private: (),
+    #[cfg(feature = "debug_pycell")]
+    location: &'static std::panic::Location<'static>,
+    #[cfg(feature = "debug_pycell")]
+    borrow_location: &'static std::panic::Location<'static>,
 }
 
 impl fmt::Debug for PyBorrowMutError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("PyBorrowMutError").finish()
+        let mut builder = f.debug_struct("PyBorrowMutError");
+
+        #[cfg(feature = "debug_pycell")]
+        builder.field("location", self.location);
+
+        builder.finish()
     }
 }
 

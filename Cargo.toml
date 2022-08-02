@@ -58,6 +58,8 @@ pyo3-build-config = { path = "pyo3-build-config", version = "0.16.5", features =
 [features]
 default = ["macros"]
 
+debug_pycell = []
+
 # Enables macros: #[pyclass], #[pymodule], #[pyfunction] etc.
 macros = ["pyo3-macros", "indoc", "unindent"]
 
