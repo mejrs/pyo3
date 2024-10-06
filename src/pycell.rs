@@ -214,6 +214,9 @@ use std::fmt;
 use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
 
+#[cfg(debug_assertions)]
+use std::panic::Location;
+
 pub(crate) mod impl_;
 #[cfg(feature = "gil-refs")]
 use self::impl_::PyClassObject;
@@ -569,6 +572,18 @@ impl<T: PyClass + fmt::Debug> fmt::Debug for PyCell<T> {
     }
 }
 
+#[doc(hidden)]
+pub enum ThreadSafeBorrowError {
+    NotSameThread,
+    BorrowError(PyBorrowError),
+}
+
+impl From<PyBorrowError> for ThreadSafeBorrowError {
+    fn from(err: PyBorrowError) -> ThreadSafeBorrowError {
+        ThreadSafeBorrowError::BorrowError(err)
+    }
+}
+
 /// A wrapper type for an immutably borrowed value from a [`Bound<'py, T>`].
 ///
 /// See the [`Bound`] documentation for more information.
@@ -674,12 +689,13 @@ impl<'py, T: PyClass> PyRef<'py, T> {
             .map(|_| Self { inner: obj.clone() })
     }
 
-    pub(crate) fn try_borrow_threadsafe(obj: &Bound<'py, T>) -> Result<Self, PyBorrowError> {
+    pub(crate) fn try_borrow_threadsafe(
+        obj: &Bound<'py, T>,
+    ) -> Result<Self, ThreadSafeBorrowError> {
         let cell = obj.get_class_object();
         cell.check_threadsafe()?;
-        cell.borrow_checker()
-            .try_borrow()
-            .map(|_| Self { inner: obj.clone() })
+        cell.borrow_checker().try_borrow()?;
+        Ok(Self { inner: obj.clone() })
     }
 }
 
@@ -1034,17 +1050,39 @@ impl<T: PyClass<Frozen = False> + fmt::Debug> fmt::Debug for PyRefMut<'_, T> {
 /// If this error is allowed to bubble up into Python code it will raise a `RuntimeError`.
 pub struct PyBorrowError {
     _private: (),
+    #[cfg(debug_assertions)]
+    mutably_borrowed_at: &'static Location<'static>,
+    #[cfg(debug_assertions)]
+    later_borrowed_at: &'static Location<'static>,
 }
 
 impl fmt::Debug for PyBorrowError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("PyBorrowError").finish()
+        let mut debug = f.debug_struct("PyBorrowError");
+        #[cfg(debug_assertions)]
+        {
+            debug.field("mutably_borrowed_at", self.mutably_borrowed_at);
+            debug.field("later_borrowed_at", self.later_borrowed_at);
+        }
+        debug.finish()
     }
 }
 
 impl fmt::Display for PyBorrowError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt("Already mutably borrowed", f)
+        #[cfg(debug_assertions)]
+        fmt::Display::fmt(
+            format_args!(
+                "Already mutably borrowed at {}; it was later borrowed at {}.",
+                self.mutably_borrowed_at, self.later_borrowed_at
+            ),
+            f,
+        )?;
+
+        #[cfg(not(debug_assertions))]
+        fmt::Display::fmt("Already mutably borrowed; compile this extension with debug assertions for improved debugging", f)?;
+
+        Ok()
     }
 }
 
@@ -1059,17 +1097,45 @@ impl From<PyBorrowError> for PyErr {
 /// If this error is allowed to bubble up into Python code it will raise a `RuntimeError`.
 pub struct PyBorrowMutError {
     _private: (),
+    #[cfg(debug_assertions)]
+    first_borrowed_at: &'static Location<'static>,
+    #[cfg(debug_assertions)]
+    outstanding_borrows: usize,
+    #[cfg(debug_assertions)]
+    later_mutably_borrowed_at: &'static Location<'static>,
 }
 
 impl fmt::Debug for PyBorrowMutError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("PyBorrowMutError").finish()
+        let mut debug = f.debug_struct("PyBorrowError");
+        #[cfg(debug_assertions)]
+        {
+            debug.field("first_borrowed_at", self.first_borrowed_at);
+            debug.field("outstanding_borrows", &self.outstanding_borrows);
+            debug.field("later_mutably_borrowed_at", self.later_mutably_borrowed_at);
+        }
+        debug.finish()
     }
 }
 
 impl fmt::Display for PyBorrowMutError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt("Already borrowed", f)
+        #[cfg(debug_assertions)]
+        fmt::Display::fmt(
+            format_args!(
+                "Already borrowed {} time(s), first at {}; it was later mutably borrowed at {}.",
+                self.outstanding_borrows, self.first_borrowed_at, self.later_mutably_borrowed_at
+            ),
+            f,
+        )?;
+
+        #[cfg(not(debug_assertions))]
+        fmt::Display::fmt(
+            "Already borrowed; compile this extension with debug assertions for improved debugging",
+            f,
+        )?;
+
+        Ok()
     }
 }
 

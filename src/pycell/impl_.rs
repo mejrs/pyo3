@@ -4,10 +4,13 @@
 use std::cell::{Cell, UnsafeCell};
 use std::marker::PhantomData;
 use std::mem::ManuallyDrop;
+#[cfg(debug_assertions)]
+use std::panic::Location;
 
 use crate::impl_::pyclass::{
     PyClassBaseType, PyClassDict, PyClassImpl, PyClassThreadChecker, PyClassWeakRef,
 };
+use crate::pycell::ThreadSafeBorrowError;
 use crate::type_object::{get_tp_free, PyLayout, PySizedLayout};
 use crate::{ffi, PyClass, PyTypeInfo, Python};
 
@@ -65,23 +68,33 @@ impl BorrowFlag {
 }
 
 pub struct EmptySlot(());
-pub struct BorrowChecker(Cell<BorrowFlag>);
+pub struct BorrowChecker {
+    flag: Cell<BorrowFlag>,
+    #[cfg(debug_assertions)]
+    borrowed_at: Cell<Option<&'static Location<'static>>>,
+}
 
 pub trait PyClassBorrowChecker {
     /// Initial value for self
     fn new() -> Self;
 
     /// Increments immutable borrow count, if possible
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow(&self) -> Result<(), PyBorrowError>;
 
     #[cfg(feature = "gil-refs")]
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow_unguarded(&self) -> Result<(), PyBorrowError>;
 
     /// Decrements immutable borrow count
     fn release_borrow(&self);
+
     /// Increments mutable borrow count, if possible
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow_mut(&self) -> Result<(), PyBorrowMutError>;
+
     /// Decremements mutable borrow count
+    #[cfg_attr(debug_assertions, track_caller)]
     fn release_borrow_mut(&self);
 }
 
@@ -119,46 +132,85 @@ impl PyClassBorrowChecker for EmptySlot {
 impl PyClassBorrowChecker for BorrowChecker {
     #[inline]
     fn new() -> Self {
-        Self(Cell::new(BorrowFlag::UNUSED))
+        Self {
+            flag: Cell::new(BorrowFlag::UNUSED),
+            borrowed_at: Cell::new(None),
+        }
     }
 
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow(&self) -> Result<(), PyBorrowError> {
-        let flag = self.0.get();
+        let flag = self.flag.get();
         if flag != BorrowFlag::HAS_MUTABLE_BORROW {
-            self.0.set(flag.increment());
+            self.flag.set(flag.increment());
+            #[cfg(debug_assertions)]
+            self.borrowed_at.set(Some(Location::caller()));
             Ok(())
         } else {
-            Err(PyBorrowError { _private: () })
+            Err(PyBorrowError {
+                _private: (),
+                #[cfg(debug_assertions)]
+                mutably_borrowed_at: self.borrowed_at.get().unwrap(),
+                #[cfg(debug_assertions)]
+                later_borrowed_at: Location::caller(),
+            })
         }
     }
 
     #[cfg(feature = "gil-refs")]
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow_unguarded(&self) -> Result<(), PyBorrowError> {
-        let flag = self.0.get();
+        let flag = self.flag.get();
         if flag != BorrowFlag::HAS_MUTABLE_BORROW {
+            #[cfg(debug_assertions)]
+            if flag == BorrowFlag::UNUSED {
+                self.borrowed_at.set(Some(Location::caller()));
+            }
             Ok(())
         } else {
-            Err(PyBorrowError { _private: () })
+            Err(PyBorrowError {
+                _private: (),
+                #[cfg(debug_assertions)]
+                mutably_borrowed_at: self.borrowed_at.get().unwrap(),
+                #[cfg(debug_assertions)]
+                later_borrowed_at: Location::caller(),
+            })
         }
     }
 
     fn release_borrow(&self) {
-        let flag = self.0.get();
-        self.0.set(flag.decrement())
+        let flag = self.flag.get();
+        let new_flag = flag.decrement();
+        self.flag.set(new_flag);
+        #[cfg(debug_assertions)]
+        if new_flag == BorrowFlag::UNUSED {
+            self.borrowed_at.set(Some(Location::caller()));
+        }
     }
 
+    #[cfg_attr(debug_assertions, track_caller)]
     fn try_borrow_mut(&self) -> Result<(), PyBorrowMutError> {
-        let flag = self.0.get();
+        let flag = self.flag.get();
         if flag == BorrowFlag::UNUSED {
-            self.0.set(BorrowFlag::HAS_MUTABLE_BORROW);
+            self.flag.set(BorrowFlag::HAS_MUTABLE_BORROW);
             Ok(())
         } else {
-            Err(PyBorrowMutError { _private: () })
+            Err(PyBorrowMutError {
+                _private: (),
+                #[cfg(debug_assertions)]
+                first_borrowed_at: self.borrowed_at.get().unwrap(),
+                #[cfg(debug_assertions)]
+                outstanding_borrows: flag.0,
+                #[cfg(debug_assertions)]
+                later_mutably_borrowed_at: Location::caller(),
+            })
         }
     }
 
     fn release_borrow_mut(&self) {
-        self.0.set(BorrowFlag::UNUSED)
+        self.flag.set(BorrowFlag::UNUSED);
+        #[cfg(debug_assertions)]
+        self.borrowed_at.set(None);
     }
 }
 
@@ -203,7 +255,7 @@ unsafe impl<T, U> PyLayout<T> for PyClassObjectBase<U> where U: PySizedLayout<T>
 #[doc(hidden)]
 pub trait PyClassObjectLayout<T>: PyLayout<T> {
     fn ensure_threadsafe(&self);
-    fn check_threadsafe(&self) -> Result<(), PyBorrowError>;
+    fn check_threadsafe(&self) -> Result<(), ThreadSafeBorrowError>;
     /// Implementation of tp_dealloc.
     /// # Safety
     /// - slf must be a valid pointer to an instance of a T or a subclass.
@@ -217,7 +269,7 @@ where
     T: PyTypeInfo,
 {
     fn ensure_threadsafe(&self) {}
-    fn check_threadsafe(&self) -> Result<(), PyBorrowError> {
+    fn check_threadsafe(&self) -> Result<(), ThreadSafeBorrowError> {
         Ok(())
     }
     unsafe fn tp_dealloc(py: Python<'_>, slf: *mut ffi::PyObject) {
@@ -312,9 +364,9 @@ where
         self.contents.thread_checker.ensure();
         self.ob_base.ensure_threadsafe();
     }
-    fn check_threadsafe(&self) -> Result<(), PyBorrowError> {
+    fn check_threadsafe(&self) -> Result<(), ThreadSafeBorrowError> {
         if !self.contents.thread_checker.check() {
-            return Err(PyBorrowError { _private: () });
+            return Err(ThreadSafeBorrowError::NotSameThread);
         }
         self.ob_base.check_threadsafe()
     }
