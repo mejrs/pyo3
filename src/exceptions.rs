@@ -331,10 +331,9 @@ except ", $name, " as e:
 ```
 use pyo3::prelude::*;
 use pyo3::exceptions::Py", $name, ";
-use pyo3::ffi::c_str;
 
 Python::attach(|py| {
-    let result: PyResult<()> = py.run(c_str!(\"raise ", $name, "\"), None, None);
+    let result: PyResult<()> = py.run(c\"raise ", $name, "\", None, None);
 
     let error_type = match result {
         Ok(_) => \"Not an error\",
